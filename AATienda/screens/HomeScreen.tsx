@@ -13,6 +13,7 @@ import CategoryGrid from "../components/CategoryGrid";
 import TravelSlider from "@/components/TravelSlider";
 import LuxurySection from "@/components/LuxurySection";
 import WeeklySellerSection from "@/components/WeeklySellerSection";
+import DoublePromoCards from "@/components/DoublePromoCards";
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Home">;
@@ -67,6 +68,20 @@ export default function HomeScreen({ navigation }: Props) {
 
         <WeeklySellerSection />
         <LuxurySection />
+        <DoublePromoCards
+  left={{
+    id: "1",
+    title: "Modular sofa",
+    image: "https://YOUR_IMAGE_1",
+    onPress: () => navigation.navigate("Collection", { handle: "furniture", title: "Furniture" }),
+  }}
+  right={{
+    id: "2",
+    title: "Revolve perfume",
+    image: "https://YOUR_IMAGE_2",
+    onPress: () => navigation.navigate("Collection", { handle: "perfume", title: "Perfume" }),
+  }}
+/>
         <TravelSlider />
         <Footer />
       </ScrollView>
