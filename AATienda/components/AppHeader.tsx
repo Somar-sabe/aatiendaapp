@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Pressable,
   ScrollView,
+  Modal,
 } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -56,7 +57,7 @@ export default function AppHeader() {
       {/* LEFT */}
       <Pressable
         onPress={() => {
-          setCartOpen(false); // ✅ لا يفتحوا سوا
+          setCartOpen(false);
           setMenuOpen(true);
         }}
         hitSlop={10}
@@ -77,11 +78,10 @@ export default function AppHeader() {
           <Ionicons name="heart-outline" size={22} color="#000" />
         </TouchableOpacity>
 
-        {/* ✅ basket opens cart drawer */}
         <TouchableOpacity
           hitSlop={10}
           onPress={() => {
-            setMenuOpen(false); // ✅ لا يفتحوا سوا
+            setMenuOpen(false);
             setCartOpen(true);
           }}
         >
@@ -89,8 +89,13 @@ export default function AppHeader() {
         </TouchableOpacity>
       </View>
 
-      {/* MENU DRAWER */}
-      {menuOpen && (
+      {/* ✅ MENU DRAWER (Modal so it won't clip) */}
+      <Modal
+        visible={menuOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setMenuOpen(false)}
+      >
         <Pressable style={styles.overlay} onPress={() => setMenuOpen(false)}>
           <Pressable style={styles.drawer} onPress={() => {}}>
             {/* Top row: language + currency */}
@@ -108,7 +113,10 @@ export default function AppHeader() {
             </View>
 
             {/* Login button */}
-            <Pressable style={styles.loginBtn} onPress={() => {}}>
+            <Pressable style={styles.loginBtn} onPress={() => {
+  setMenuOpen(false);
+  navigation.navigate("Login");
+}}>
               <Text style={styles.loginText}>Login/ Register</Text>
               <Ionicons name="person-outline" size={16} color="#fff" />
             </Pressable>
@@ -151,7 +159,7 @@ export default function AppHeader() {
             </View>
           </Pressable>
         </Pressable>
-      )}
+      </Modal>
 
       {/* ✅ CART DRAWER */}
       <CartDrawer
@@ -184,9 +192,8 @@ const styles = StyleSheet.create({
   icons: { flexDirection: "row", gap: 16 },
 
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    flex: 1,
     backgroundColor: "rgba(0,0,0,0.35)",
-    zIndex: 9999,
   },
 
   drawer: {

@@ -7,6 +7,10 @@ import ProductScreen from "../screens/ProductScreen";
 import CartScreen from "../screens/CartScreen";
 import CheckoutScreen from "../screens/CheckoutScreen";
 
+// ✅ ADD THESE IMPORTS
+import LoginScreen from "../screens/LoginScreen";
+import RegisterScreen from "../screens/RegisterScreen";
+
 export type RootStackParamList = {
   Home: undefined;
   Collection: { handle: string; title?: string };
@@ -15,6 +19,10 @@ export type RootStackParamList = {
   };
   Cart: undefined;
   Checkout: undefined;
+
+  // ✅ ADD THESE ROUTES
+  Login: undefined;
+  Register: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -27,6 +35,10 @@ export default function StackNavigator() {
       <Stack.Screen name="Product" component={ProductScreen} />
       <Stack.Screen name="Cart" component={CartScreen} />
       <Stack.Screen name="Checkout" component={CheckoutScreen} />
+
+      {/* ✅ ADD THESE SCREENS */}
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
     </Stack.Navigator>
   );
 }

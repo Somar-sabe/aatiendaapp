@@ -6,6 +6,7 @@ import {
   Pressable,
   Image,
   ScrollView,
+  Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useCart } from "../context/CartContext";
@@ -16,8 +17,8 @@ const BORDER = "#E6E6E6";
 type Props = {
   open: boolean;
   onClose: () => void;
-  onGoToCart: () => void;      // View Bag
-  onCheckout: () => void;      // Checkout
+  onGoToCart: () => void; // View Bag
+  onCheckout: () => void; // Checkout
 };
 
 function priceToNumber(price: string) {
@@ -26,134 +27,138 @@ function priceToNumber(price: string) {
 }
 
 export default function CartDrawer({ open, onClose, onGoToCart, onCheckout }: Props) {
-  const { items, updateQuantity, removeFromCart, totalPrice } = useCart();
-
-  if (!open) return null;
+  const { items, updateQuantity, removeFromCart } = useCart();
 
   return (
-    <Pressable style={styles.overlay} onPress={onClose}>
-      {/* stop closing when clicking inside drawer */}
-      <Pressable style={styles.drawer} onPress={() => {}}>
-        {/* Header */}
-        <View style={styles.headerRow}>
-          <Text style={styles.headerTitle}>Your cart</Text>
-          <Pressable onPress={onClose} hitSlop={10} style={styles.closeBtn}>
-            <Ionicons name="close" size={18} color="#111" />
-          </Pressable>
-        </View>
+    <Modal
+      visible={open}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <Pressable style={styles.overlay} onPress={onClose}>
+        {/* stop closing when clicking inside drawer */}
+        <Pressable style={styles.drawer} onPress={() => {}}>
+          {/* Header */}
+          <View style={styles.headerRow}>
+            <Text style={styles.headerTitle}>Your cart</Text>
+            <Pressable onPress={onClose} hitSlop={10} style={styles.closeBtn}>
+              <Ionicons name="close" size={18} color="#111" />
+            </Pressable>
+          </View>
 
-        {/* Table head */}
-        <View style={styles.tableHead}>
-          <Text style={styles.tableHeadText}>PRODUCT</Text>
-          <Text style={styles.tableHeadText}>TOTAL</Text>
-        </View>
+          {/* Table head */}
+          <View style={styles.tableHead}>
+            <Text style={styles.tableHeadText}>PRODUCT</Text>
+            <Text style={styles.tableHeadText}>TOTAL</Text>
+          </View>
 
-        <View style={styles.hr} />
+          <View style={styles.hr} />
 
-        {/* Items */}
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 170 }}
-        >
-          {items.length === 0 ? (
-            <View style={{ padding: 18 }}>
-              <Text style={{ color: "#666", fontWeight: "600" }}>
-                Your cart is empty.
-              </Text>
-            </View>
-          ) : (
-            items.map((it) => {
-              const unit = priceToNumber(it.price || "0");
-              const lineTotal = (unit * (it.quantity || 1)).toFixed(0);
+          {/* Items */}
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 170 }}
+          >
+            {items.length === 0 ? (
+              <View style={{ padding: 18 }}>
+                <Text style={{ color: "#666", fontWeight: "600" }}>
+                  Your cart is empty.
+                </Text>
+              </View>
+            ) : (
+              items.map((it) => {
+                const unit = priceToNumber(it.price || "0");
+                const lineTotal = (unit * (it.quantity || 1)).toFixed(0);
 
-              return (
-                <View key={`${it.id}-${it.option ?? ""}`} style={styles.itemRow}>
-                  {/* image */}
-                  <View style={styles.thumbBox}>
-                    {!!it.image ? (
-                      <Image source={{ uri: it.image }} style={styles.thumb} />
-                    ) : (
-                      <View style={[styles.thumb, { backgroundColor: "#f2f2f2" }]} />
-                    )}
-                  </View>
+                return (
+                  <View key={`${it.id}-${it.option ?? ""}`} style={styles.itemRow}>
+                    {/* image */}
+                    <View style={styles.thumbBox}>
+                      {!!it.image ? (
+                        <Image source={{ uri: it.image }} style={styles.thumb} />
+                      ) : (
+                        <View style={[styles.thumb, { backgroundColor: "#f2f2f2" }]} />
+                      )}
+                    </View>
 
-                  {/* middle */}
-                  <View style={styles.mid}>
-                    <Text style={styles.name} numberOfLines={3}>
-                      {it.name}
-                    </Text>
+                    {/* middle */}
+                    <View style={styles.mid}>
+                      <Text style={styles.name} numberOfLines={3}>
+                        {it.name}
+                      </Text>
 
-                    <Text style={styles.smallPrice}>{it.price} AED</Text>
+                      <Text style={styles.smallPrice}>{it.price} AED</Text>
 
-                    {/* qty box */}
-                    <View style={styles.qtyBox}>
-                      <Pressable
-                        style={styles.qtyBtn}
-                        onPress={() => updateQuantity(it.id, Math.max(1, it.quantity - 1))}
-                        hitSlop={8}
-                      >
-                        <Ionicons name="remove" size={18} color="#777" />
-                      </Pressable>
+                      {/* qty box */}
+                      <View style={styles.qtyBox}>
+                        <Pressable
+                          style={styles.qtyBtn}
+                          onPress={() => updateQuantity(it.id, Math.max(1, it.quantity - 1))}
+                          hitSlop={8}
+                        >
+                          <Ionicons name="remove" size={18} color="#777" />
+                        </Pressable>
 
-                      <View style={styles.qtyMid}>
-                        <Text style={styles.qtyText}>{it.quantity}</Text>
+                        <View style={styles.qtyMid}>
+                          <Text style={styles.qtyText}>{it.quantity}</Text>
+                        </View>
+
+                        <Pressable
+                          style={styles.qtyBtn}
+                          onPress={() => updateQuantity(it.id, it.quantity + 1)}
+                          hitSlop={8}
+                        >
+                          <Ionicons name="add" size={18} color="#777" />
+                        </Pressable>
                       </View>
+                    </View>
+
+                    {/* right total + trash */}
+                    <View style={styles.rightCol}>
+                      <Text style={styles.totalText}>{lineTotal} AED</Text>
 
                       <Pressable
-                        style={styles.qtyBtn}
-                        onPress={() => updateQuantity(it.id, it.quantity + 1)}
-                        hitSlop={8}
+                        style={styles.trash}
+                        onPress={() => removeFromCart(it.id)}
+                        hitSlop={10}
                       >
-                        <Ionicons name="add" size={18} color="#777" />
+                        <Ionicons name="trash-outline" size={18} color="#777" />
                       </Pressable>
                     </View>
                   </View>
+                );
+              })
+            )}
+          </ScrollView>
 
-                  {/* right total + trash */}
-                  <View style={styles.rightCol}>
-                    <Text style={styles.totalText}>{lineTotal} AED</Text>
+          {/* Sticky bottom */}
+          <View style={styles.bottom}>
+            <View style={styles.bottomDivider} />
 
-                    <Pressable
-                      style={styles.trash}
-                      onPress={() => removeFromCart(it.id)}
-                      hitSlop={10}
-                    >
-                      <Ionicons name="trash-outline" size={18} color="#777" />
-                    </Pressable>
-                  </View>
-                </View>
-              );
-            })
-          )}
-        </ScrollView>
+            <Text style={styles.estTitle}>Estimated total</Text>
+            <Text style={styles.estSub}>
+              Tax included and shipping and discounts calculated at checkout
+            </Text>
 
-        {/* Sticky bottom */}
-        <View style={styles.bottom}>
-          <View style={styles.bottomDivider} />
+            <Pressable style={styles.checkoutBtn} onPress={onCheckout}>
+              <Text style={styles.checkoutText}>Checkout</Text>
+            </Pressable>
 
-          <Text style={styles.estTitle}>Estimated total</Text>
-          <Text style={styles.estSub}>
-            Tax included and shipping and discounts calculated at checkout
-          </Text>
-
-          <Pressable style={styles.checkoutBtn} onPress={onCheckout}>
-            <Text style={styles.checkoutText}>Checkout</Text>
-          </Pressable>
-
-          <Pressable style={styles.viewBagBtn} onPress={onGoToCart}>
-            <Text style={styles.viewBagText}>View Bag</Text>
-          </Pressable>
-        </View>
+            <Pressable style={styles.viewBagBtn} onPress={onGoToCart}>
+              <Text style={styles.viewBagText}>View Bag</Text>
+            </Pressable>
+          </View>
+        </Pressable>
       </Pressable>
-    </Pressable>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    flex: 1,
     backgroundColor: "rgba(0,0,0,0.35)",
-    zIndex: 99999,
   },
 
   drawer: {

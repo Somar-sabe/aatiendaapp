@@ -17,9 +17,10 @@ export default function ScreenLayout({
 }) {
   return (
     <View style={styles.container}>
+         <HeaderUtilityBar />
       <AnnouncementBar />
       <AppHeader />
-      <HeaderUtilityBar />
+   
 
       {scroll ? (
         <ScrollView

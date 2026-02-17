@@ -71,9 +71,10 @@ export default function CollectionScreen() {
 
   return (
     <View style={styles.container}>
+         <HeaderUtilityBar />
       <AnnouncementBar />
       <AppHeader />
-      <HeaderUtilityBar />
+   
 
       {!!title && <Text style={styles.pageTitle}>{title}</Text>}
 

@@ -60,7 +60,14 @@ export default function ProductScreen({ route, navigation }: Props) {
     quantity: qty,
   };
 
-  const onAdd = () => addToCart(productForCart);
+  const onAdd = () => {
+  addToCart(productForCart);
+};
+
+const onBuyNow = () => {
+  addToCart(productForCart);
+  navigation.navigate("Checkout");
+};
 
   return (
     <ScreenLayout >
@@ -180,16 +187,16 @@ export default function ProductScreen({ route, navigation }: Props) {
 
           {/* Sticky bottom bar */}
           <View style={styles.stickyBar}>
-            <Pressable style={styles.addToCart} onPress={onAdd}>
-              <Text style={styles.addToCartText}>ADD TO CART</Text>
-            </Pressable>
+<Pressable style={styles.addToCart} onPress={onAdd}>
+  <Text style={styles.addToCartText}>ADD TO CART</Text>
+</Pressable>
 
-            <Pressable
-              style={styles.buyNow}
-              onPress={() => navigation.navigate("Checkout")}
-            >
-              <Text style={styles.buyNowText}>Buy Now</Text>
-            </Pressable>
+<Pressable
+  style={styles.buyNow}
+  onPress={onBuyNow}
+>
+  <Text style={styles.buyNowText}>Buy Now</Text>
+</Pressable>
           </View>
         </View>
       </SafeAreaView>
