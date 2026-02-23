@@ -12,7 +12,7 @@ import SliderGallery from "../components/SliderGallery";
 import CategoryGrid from "../components/CategoryGrid";
 import TravelSlider from "@/components/TravelSlider";
 import LuxurySection from "@/components/LuxurySection";
-import WeeklySellerSection from "@/components/WeeklySellerSection";
+
 import DoublePromoCards from "@/components/DoublePromoCards";
 
 type Props = {
@@ -25,21 +25,21 @@ const WHATS_NEW = [
     title: "Ava oversized linen kaftan",
     price: "1,322",
     image:
-      "https://images.unsplash.com/photo-1520975958225-2b36b0f1a1f9?auto=format&fit=crop&w=900&q=80",
+      "https://cdn.shopify.com/s/files/1/0725/5418/5021/files/0f7e4cecba751c3e65eec7552a6a0355.jpg?v=1718023264",
   },
   {
     id: "2",
     title: "Sleeveless Mini Crepe",
     price: "238",
     image:
-      "https://images.unsplash.com/photo-1520975682071-a7a6d7b1d3a5?auto=format&fit=crop&w=900&q=80",
+      "https://cdn.shopify.com/s/files/1/0725/5418/5021/products/8032308160218_3.jpg?v=1687355907",
   },
   {
     id: "3",
     title: "Carmelean Abaya",
     price: "1,800",
     image:
-      "https://images.unsplash.com/photo-1520975752241-7a75f1d8a7c1?auto=format&fit=crop&w=900&q=80",
+      "https://cdn.shopify.com/s/files/1/0725/5418/5021/products/8685f44c01f5d32c13d9e59cea8e99ff.jpg?v=1709032650",
   },
 ];
 
@@ -66,19 +66,19 @@ export default function HomeScreen({ navigation }: Props) {
           }
         />
 
-        <WeeklySellerSection />
+       
         <LuxurySection />
         <DoublePromoCards
   left={{
     id: "1",
     title: "Modular sofa",
-    image: "https://YOUR_IMAGE_1",
+    image: "https://cdn.shopify.com/s/files/1/0725/5418/5021/files/img_1.png?v=1726734147",
     onPress: () => navigation.navigate("Collection", { handle: "furniture", title: "Furniture" }),
   }}
   right={{
     id: "2",
     title: "Revolve perfume",
-    image: "https://YOUR_IMAGE_2",
+    image: "https://cdn.shopify.com/s/files/1/0725/5418/5021/files/img_2.png?v=1726734148",
     onPress: () => navigation.navigate("Collection", { handle: "perfume", title: "Perfume" }),
   }}
 />

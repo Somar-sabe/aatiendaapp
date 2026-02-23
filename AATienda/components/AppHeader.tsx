@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { SvgXml } from "react-native-svg";
 import { logoSvg } from "../assets/logo";
 import {
@@ -14,6 +14,7 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/StackNavigator";
+import SearchOverlay from "./SearchOverlay";
 
 // ✅ cart drawer
 import CartDrawer from "./CartDrawer";
@@ -22,13 +23,53 @@ type NavProp = NativeStackNavigationProp<RootStackParamList>;
 
 type DrawerLink = { label: string; handle?: string };
 
-const MAIN_LINKS: DrawerLink[] = [
-  { label: "Women", handle: "women" },
-  { label: "Men", handle: "men" },
+type DrawerSection = {
+  label: string;
+  handle?: string; // optional parent collection
+  children?: DrawerLink[];
+};
+
+const WOMEN_CHILDREN: DrawerLink[] = [
+  { label: "Abayas & Kaftans", handle: "abayas-kaftans" },
+  { label: "Clothing", handle: "women-clothing" },
+  { label: "Bags", handle: "women-bags" },
+  { label: "Shoes", handle: "women-shoes" },
+  { label: "Jewelry", handle: "women-jewelry" },
+  { label: "Watches", handle: "women-watches" },
+  { label: "Accessories", handle: "women-accessories" },
+  { label: "Sunglasses & Frames", handle: "women-sunglasses-frames" },
+];
+
+const MEN_CHILDREN: DrawerLink[] = [
+  { label: "Clothing", handle: "men-clothing" },
+  { label: "Shoes", handle: "men-shoes" },
+  { label: "Bags", handle: "men-bags" },
+  { label: "Watches", handle: "men-watches" },
+  { label: "Accessories", handle: "men-accessories" },
+  { label: "Sunglasses & Frames", handle: "men-sunglasses-frames" },
+];
+
+const FURNITURE_CHILDREN: DrawerLink[] = [
+  { label: "Beds", handle: "beds" },
+  { label: "Sofas", handle: "sofas" },
+  { label: "Dining Tables", handle: "diningtables" },
+  { label: "Mirrors", handle: "mirrors" },
+  { label: "Night Stands", handle: "nightstands" },
+];
+
+const GOLD_CHILDREN: DrawerLink[] = [
+  { label: "Bracelets", handle: "bracelets" },
+  { label: "Rings", handle: "rings" },
+  { label: "Earrings", handle: "earrings" },
+  { label: "Necklaces", handle: "necklaces" },
+];
+const SECTIONS: DrawerSection[] = [
+  { label: "Women", handle: "women", children: WOMEN_CHILDREN },
+  { label: "Men", handle: "men", children: MEN_CHILDREN },
   { label: "Baby", handle: "baby" },
-  { label: "Furniture", handle: "furniture" },
+  { label: "Furniture", handle: "furniture", children: FURNITURE_CHILDREN },
   { label: "Electronics", handle: "electronics" },
-  { label: "Gold & Diamonds", handle: "gold-diamonds" },
+  { label: "Gold & Diamonds", handle: "gold-diamonds", children: GOLD_CHILDREN },
   { label: "Perfume", handle: "perfume" },
   { label: "Best Sellers", handle: "best-sellers" },
 ];
@@ -44,12 +85,68 @@ export default function AppHeader() {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+const [searchOpen, setSearchOpen] = useState(false);
+const [searchText, setSearchText] = useState("");
+  // ✅ which section is expanded (Women / Men)
+  const [openSection, setOpenSection] = useState<string | null>("Women"); // default open like screenshot
 
   const goCollection = (handle?: string, title?: string) => {
     if (!handle) return;
     setMenuOpen(false);
     setCartOpen(false);
     navigation.navigate("Collection", { handle, title });
+  };
+
+  const toggleSection = (label: string) => {
+    setOpenSection((prev) => (prev === label ? null : label));
+  };
+
+  const womenOpen = openSection === "Women";
+  const menOpen = openSection === "Men";
+
+  const renderSectionRow = (sec: DrawerSection) => {
+    const isExpandable = !!sec.children?.length;
+    const isOpen = openSection === sec.label;
+
+    return (
+      <View key={sec.label}>
+        <Pressable
+          style={styles.linkRow}
+          onPress={() => {
+            if (isExpandable) toggleSection(sec.label);
+            else goCollection(sec.handle, sec.label);
+          }}
+        >
+          <Text style={styles.linkText}>{sec.label}</Text>
+
+          {isExpandable ? (
+            <Ionicons
+              name={isOpen ? "chevron-down" : "chevron-forward"}
+              size={18}
+              color="#999"
+            />
+          ) : (
+            <Ionicons name="chevron-forward" size={18} color="#999" />
+          )}
+        </Pressable>
+
+        {/* ✅ children list like screenshot */}
+        {isExpandable && isOpen && (
+          <View style={styles.childrenWrap}>
+            {sec.children!.map((ch) => (
+              <Pressable
+                key={ch.label}
+                style={styles.childRow}
+                onPress={() => goCollection(ch.handle, ch.label)}
+              >
+                <Text style={styles.childText}>{ch.label}</Text>
+                <Ionicons name="chevron-forward" size={16} color="#b0b0b0" />
+              </Pressable>
+            ))}
+          </View>
+        )}
+      </View>
+    );
   };
 
   return (
@@ -70,9 +167,17 @@ export default function AppHeader() {
 
       {/* RIGHT */}
       <View style={styles.icons}>
-        <TouchableOpacity hitSlop={10} onPress={() => {}}>
-          <Ionicons name="search" size={22} color="#000" />
-        </TouchableOpacity>
+ <TouchableOpacity
+  hitSlop={10}
+  onPress={() => {
+    setMenuOpen(false);
+    setCartOpen(false);
+    setSearchOpen(true);
+  }}
+>
+  <Ionicons name="search" size={22} color="#000" />
+</TouchableOpacity>
+
 
         <TouchableOpacity hitSlop={10} onPress={() => {}}>
           <Ionicons name="heart-outline" size={22} color="#000" />
@@ -89,7 +194,7 @@ export default function AppHeader() {
         </TouchableOpacity>
       </View>
 
-      {/* ✅ MENU DRAWER (Modal so it won't clip) */}
+      {/* ✅ MENU DRAWER */}
       <Modal
         visible={menuOpen}
         transparent
@@ -107,32 +212,26 @@ export default function AppHeader() {
               </Pressable>
 
               <Pressable style={styles.currencyBtn} onPress={() => {}}>
-                <Text style={styles.currencyText}>AED</Text>
+                <Text style={styles.currencyText}>EUR</Text>
                 <Ionicons name="chevron-down" size={16} color="#222" />
               </Pressable>
             </View>
 
             {/* Login button */}
-            <Pressable style={styles.loginBtn} onPress={() => {
-  setMenuOpen(false);
-  navigation.navigate("Login");
-}}>
+            <Pressable
+              style={styles.loginBtn}
+              onPress={() => {
+                setMenuOpen(false);
+                // navigation.navigate("Login"); // if you have Login screen
+              }}
+            >
               <Text style={styles.loginText}>Login/ Register</Text>
               <Ionicons name="person-outline" size={16} color="#fff" />
             </Pressable>
 
             {/* Links list */}
             <ScrollView showsVerticalScrollIndicator={false} style={styles.list}>
-              {MAIN_LINKS.map((it) => (
-                <Pressable
-                  key={it.label}
-                  style={styles.linkRow}
-                  onPress={() => goCollection(it.handle, it.label)}
-                >
-                  <Text style={styles.linkText}>{it.label}</Text>
-                  <Ionicons name="chevron-forward" size={18} color="#999" />
-                </Pressable>
-              ))}
+              {SECTIONS.map(renderSectionRow)}
 
               <Text style={styles.sectionTitle}>B2B categories</Text>
 
@@ -147,7 +246,7 @@ export default function AppHeader() {
               ))}
 
               <Pressable style={styles.sellRow} onPress={() => {}}>
-                <Text style={styles.sellText}>Sell on AAtiend a</Text>
+                <Text style={styles.sellText}>Sell on AATienda</Text>
               </Pressable>
 
               <View style={{ height: 24 }} />
@@ -174,6 +273,21 @@ export default function AppHeader() {
           navigation.navigate("Checkout");
         }}
       />
+      <SearchOverlay
+  open={searchOpen}
+  onClose={() => setSearchOpen(false)}
+  value={searchText}
+  onChange={setSearchText}
+  onSubmit={() => {
+    // ✅ هون بتقرر شو تعمل لما يعمل Search
+    // مثال: روح على Collection handle ثابت للبحث (إذا عندك شاشة Search خاصة)
+    // navigation.navigate("Search" as any, { q: searchText });
+
+    // حاليا بس سكّر
+    setSearchOpen(false);
+  }}
+/>
+
     </View>
   );
 }
@@ -191,10 +305,7 @@ const styles = StyleSheet.create({
   },
   icons: { flexDirection: "row", gap: 16 },
 
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.35)",
-  },
+  overlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.35)" },
 
   drawer: {
     backgroundColor: "#DADADA",
@@ -243,6 +354,26 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   linkText: { color: "#444", fontSize: 15, fontWeight: "500" },
+
+  // ✅ Nested children styling like screenshot
+  childrenWrap: {
+    paddingLeft: 6,
+    paddingRight: 6,
+    paddingBottom: 6,
+  },
+  childRow: {
+    paddingHorizontal: 14,
+    height: 38,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  childText: {
+    color: "#444",
+    fontSize: 14,
+    fontWeight: "500",
+    opacity: 0.95,
+  },
 
   sectionTitle: {
     marginTop: 14,

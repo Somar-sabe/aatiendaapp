@@ -14,9 +14,12 @@ import RegisterScreen from "../screens/RegisterScreen";
 export type RootStackParamList = {
   Home: undefined;
   Collection: { handle: string; title?: string };
-  Product: {
-    product: { id: string; name: string; price: string; img: string };
-  };
+  
+    Product: {
+  product: { id: string; name: string; price: string; img: string; handle?: string };
+};
+
+ 
   Cart: undefined;
   Checkout: undefined;
 

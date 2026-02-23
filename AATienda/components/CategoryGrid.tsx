@@ -42,28 +42,28 @@ const categories: Category[] = [
     id: "4",
     title: "Furniture",
     image:
-      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=600&q=80",
+      "https://cdn.shopify.com/s/files/1/0725/5418/5021/files/Frame_1321316345.png?v=1726704716",
     handle: "furniture",
   },
   {
     id: "5",
     title: "Gold &\nDiamonds",
     image:
-      "https://images.unsplash.com/photo-1601121141461-9d6647bca1a3?auto=format&fit=crop&w=600&q=80",
+      "https://cdn.shopify.com/s/files/1/0725/5418/5021/files/Frame_1321316346.png?v=1726704716",
     handle: "gold-diamonds",
   },
   {
     id: "6",
     title: "Perfume",
     image:
-      "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=600&q=80",
+      "https://cdn.shopify.com/s/files/1/0725/5418/5021/files/Frame_1321316348.png?v=1726704716",
     handle: "perfume",
   },
   {
     id: "7",
     title: "Electronics",
     image:
-      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+      "https://cdn.shopify.com/s/files/1/0725/5418/5021/files/Frame_1321316347.png?v=1726704715",
     handle: "electronics",
   },
   {
@@ -77,7 +77,7 @@ const categories: Category[] = [
     id: "9",
     title: "Services",
     image:
-      "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=600&q=80",
+      "https://cdn.shopify.com/s/files/1/0725/5418/5021/files/Frame_1321316349.png?v=1726704716",
     handle: "services",
   },
 ];

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   Pressable,
   ScrollView,
   SafeAreaView,
+  ActivityIndicator,
 } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
@@ -15,7 +16,7 @@ import { RootStackParamList } from "../navigation/StackNavigator";
 import { useCart, CartItemType } from "../context/CartContext";
 
 import ProductDetailsTabs from "../components/ProductDetailsTabs";
-import ScreenLayout from "../components/ScreenLayout"; // ✅ NEW
+import ScreenLayout from "../components/ScreenLayout";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Product">;
 
@@ -32,15 +33,47 @@ export default function ProductScreen({ route, navigation }: Props) {
   const [qty, setQty] = useState(1);
   const [size, setSize] = useState<"S" | "M" | "XL">("S");
 
+  // ✅ description from Shopify
+  const [descHtml, setDescHtml] = useState<string>("");
+  const [loadingDesc, setLoadingDesc] = useState(false);
+
+  // ✅ fake compare price (مثل الصورة)
   const compareAt = useMemo(() => {
     const p = Number(product?.price || 0);
     if (!p) return null;
     return String(Math.round(p * 1.12));
   }, [product?.price]);
 
+  // ✅ fetch real description from Shopify by product id inside its collection
+  useEffect(() => {
+    const loadDesc = async () => {
+      // لازم يكون في handle حتى نعرف أي collection نجيب منها
+      const handle = (product as any)?.handle;
+      if (!product?.id || !handle) return;
+
+      try {
+        setLoadingDesc(true);
+        const res = await fetch(
+          `https://aatienda.com/collections/${handle}/products.json`
+        );
+        const data = await res.json();
+        const found = (data?.products || []).find(
+          (p: any) => String(p.id) === String(product.id)
+        );
+        setDescHtml(found?.body_html || "");
+      } catch (e) {
+        setDescHtml("");
+      } finally {
+        setLoadingDesc(false);
+      }
+    };
+
+    loadDesc();
+  }, [product?.id]);
+
   if (!product) {
     return (
-      <ScreenLayout >
+      <ScreenLayout>
         <View style={styles.center}>
           <Text style={{ fontWeight: "700" }}>No product data found.</Text>
           <Pressable style={styles.backBtn} onPress={() => navigation.goBack()}>
@@ -61,22 +94,22 @@ export default function ProductScreen({ route, navigation }: Props) {
   };
 
   const onAdd = () => {
-  addToCart(productForCart);
-};
+    addToCart(productForCart);
+  };
 
-const onBuyNow = () => {
-  addToCart(productForCart);
-  navigation.navigate("Checkout");
-};
+  const onBuyNow = () => {
+    addToCart(productForCart);
+    navigation.navigate("Checkout");
+  };
 
   return (
-    <ScreenLayout >
-      {/* ✅ SafeArea inside layout body */}
+    <ScreenLayout>
       <SafeAreaView style={styles.safe}>
         <View style={styles.container}>
           <ScrollView
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContent}
+            // ✅ مهم جدًا: حتى ما يختفي المحتوى تحت الـ sticky buttons
+            contentContainerStyle={[styles.scrollContent, { paddingBottom: 170 }]}
           >
             {/* Breadcrumb */}
             <Text style={styles.breadcrumb}>
@@ -98,11 +131,7 @@ const onBuyNow = () => {
               {/* right overlay icons */}
               <View style={styles.imageRightIcons}>
                 <Pressable style={styles.iconCircle} onPress={() => {}}>
-                  <Ionicons
-                    name="share-social-outline"
-                    size={20}
-                    color="#111"
-                  />
+                  <Ionicons name="share-social-outline" size={20} color="#111" />
                 </Pressable>
 
                 <Pressable style={styles.iconCircle} onPress={() => {}}>
@@ -134,7 +163,9 @@ const onBuyNow = () => {
             {/* Price row */}
             <View style={styles.priceRow}>
               <Text style={styles.priceNow}>{productForCart.price} AED</Text>
-              {!!compareAt && <Text style={styles.priceOld}>{compareAt} AED</Text>}
+              {!!compareAt && (
+                <Text style={styles.priceOld}>{compareAt} AED</Text>
+              )}
             </View>
 
             {/* Quantity */}
@@ -151,7 +182,10 @@ const onBuyNow = () => {
                 <Text style={styles.qtyText}>{qty}</Text>
               </View>
 
-              <Pressable style={styles.qtyBtn} onPress={() => setQty((q) => q + 1)}>
+              <Pressable
+                style={styles.qtyBtn}
+                onPress={() => setQty((q) => q + 1)}
+              >
                 <Ionicons name="add" size={18} color="#666" />
               </Pressable>
             </View>
@@ -178,25 +212,28 @@ const onBuyNow = () => {
               <PayIcon label="tabby" />
             </View>
 
-            {/* Tabs */}
-            <ProductDetailsTabs />
+            {/* Tabs (✅ description from shopify + review UI like image) */}
+            <ProductDetailsTabs
+              descriptionHtml={descHtml}
+              loadingDescription={loadingDesc}
+            />
 
-            {/* Bottom spacing so content not hidden behind sticky bar */}
-            <View style={{ height: 130 }} />
+            {loadingDesc && !descHtml ? (
+              <View style={{ paddingVertical: 10 }}>
+                <ActivityIndicator />
+              </View>
+            ) : null}
           </ScrollView>
 
-          {/* Sticky bottom bar */}
+          {/* ✅ Sticky bottom bar (always visible) */}
           <View style={styles.stickyBar}>
-<Pressable style={styles.addToCart} onPress={onAdd}>
-  <Text style={styles.addToCartText}>ADD TO CART</Text>
-</Pressable>
+            <Pressable style={styles.addToCart} onPress={onAdd}>
+              <Text style={styles.addToCartText}>ADD TO CART</Text>
+            </Pressable>
 
-<Pressable
-  style={styles.buyNow}
-  onPress={onBuyNow}
->
-  <Text style={styles.buyNowText}>Buy Now</Text>
-</Pressable>
+            <Pressable style={styles.buyNow} onPress={onBuyNow}>
+              <Text style={styles.buyNowText}>Buy Now</Text>
+            </Pressable>
           </View>
         </View>
       </SafeAreaView>
@@ -216,10 +253,16 @@ function SizePill({
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.sizePill, active ? styles.sizePillActive : styles.sizePillIdle]}
+      style={[
+        styles.sizePill,
+        active ? styles.sizePillActive : styles.sizePillIdle,
+      ]}
     >
       <Text
-        style={[styles.sizeText, active ? styles.sizeTextActive : styles.sizeTextIdle]}
+        style={[
+          styles.sizeText,
+          active ? styles.sizeTextActive : styles.sizeTextIdle,
+        ]}
       >
         {value}
       </Text>
@@ -230,7 +273,9 @@ function SizePill({
 function PayIcon({ label, bold }: { label: string; bold?: boolean }) {
   return (
     <View style={styles.payIcon}>
-      <Text style={[styles.payIconText, bold && { fontWeight: "900" }]}>{label}</Text>
+      <Text style={[styles.payIconText, bold && { fontWeight: "900" }]}>
+        {label}
+      </Text>
     </View>
   );
 }
@@ -376,7 +421,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
   },
-  sizeRow: { marginTop: 10, flexDirection: "row", justifyContent: "center", gap: 10 },
+  sizeRow: {
+    marginTop: 10,
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 10,
+  },
   sizePill: {
     minWidth: 38,
     height: 28,

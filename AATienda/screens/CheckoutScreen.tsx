@@ -17,23 +17,16 @@ function priceToNumber(price: string) {
 }
 
 export default function CheckoutScreen() {
-  // ✅ fallback-safe: لو TS شايف نوع قديم، منحوّله لأي
-  const cart = useCart() as unknown as {
-    cartItems: CartItemType[];
-    clearCart: () => void;
-    total: number;
-  };
-
-  const { cartItems, clearCart, total } = cart;
+  const { items, clearCart, totalPrice } = useCart();
 
   const handlePayment = async () => {
-    if (!cartItems || cartItems.length === 0) {
+    if (!items || items.length === 0) {
       Alert.alert("Your cart is empty");
       return;
     }
 
     try {
-      const lines = cartItems.map((item: CartItemType) => ({
+      const lines = items.map((item: CartItemType) => ({
         id: item.id,
         title: item.name,
         price: priceToNumber(item.price),
@@ -60,14 +53,16 @@ export default function CheckoutScreen() {
       <Text style={styles.title}>Checkout</Text>
 
       <FlatList
-        data={cartItems}
+        data={items}
         keyExtractor={(i: CartItemType) => `${i.id}-${i.option ?? ""}`}
         renderItem={({ item }: { item: CartItemType }) => (
           <View style={styles.row}>
             <Text style={styles.left}>
               {item.name} × {item.quantity}
             </Text>
-            <Text style={styles.right}>AED {item.price}</Text>
+            <Text style={styles.right}>
+              AED {priceToNumber(item.price).toFixed(2)}
+            </Text>
           </View>
         )}
         ListEmptyComponent={
@@ -77,7 +72,9 @@ export default function CheckoutScreen() {
         }
       />
 
-      <Text style={styles.total}>Total: AED {Number(total || 0).toFixed(2)}</Text>
+      <Text style={styles.total}>
+        Total: AED {priceToNumber(String(totalPrice)).toFixed(2)}
+      </Text>
 
       <TouchableOpacity style={styles.payBtn} onPress={handlePayment}>
         <Text style={styles.payText}>Pay Now</Text>
@@ -89,20 +86,42 @@ export default function CheckoutScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: "#fff" },
   title: { fontSize: 26, fontWeight: "bold", marginBottom: 20 },
+
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 10,
     gap: 12,
   },
-  left: { flex: 1, color: "#111", fontWeight: "600" },
-  right: { color: "#111", fontWeight: "800" },
-  total: { marginTop: 10, fontSize: 18, fontWeight: "800" },
+
+  left: {
+    flex: 1,
+    color: "#111",
+    fontWeight: "600",
+  },
+
+  right: {
+    color: "#111",
+    fontWeight: "800",
+  },
+
+  total: {
+    marginTop: 16,
+    fontSize: 18,
+    fontWeight: "800",
+  },
+
   payBtn: {
     backgroundColor: "#000",
     padding: 15,
     marginTop: 18,
     borderRadius: 8,
   },
-  payText: { color: "#fff", textAlign: "center", fontSize: 18, fontWeight: "800" },
+
+  payText: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "800",
+  },
 });
