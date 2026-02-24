@@ -7,16 +7,69 @@ import {
   Pressable,
   TouchableOpacity,
   Linking,
+  Alert,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Ionicons, Feather, FontAwesome5 } from "@expo/vector-icons";
+import type { RootStackParamList } from "@/navigation/StackNavigator";
 
+type Nav = NativeStackNavigationProp<RootStackParamList>;
 type SectionKey = "about" | "policies" | "care";
 
+const SOCIAL = {
+  facebook: "", // ضع رابطك إذا بدك
+  instagram: "",
+  youtube: "",
+  tiktok: "",
+  pinterest: "",
+  snapchat: "",
+};
+
 export default function Footer() {
+  const nav = useNavigation<Nav>();
+
   const [open, setOpen] = useState<SectionKey | null>(null);
   const toggle = (k: SectionKey) => setOpen((p) => (p === k ? null : k));
 
   const year = useMemo(() => new Date().getFullYear(), []);
+  const [email, setEmail] = useState("");
+
+  // ✅ FIX: navigate using object { name } => solves TS overload issue
+  const go = (route: keyof RootStackParamList) => {
+    setOpen(null);
+    nav.navigate({ name: route } as any);
+  };
+
+  // If you ever need params later:
+  // const goWithParams = <T extends keyof RootStackParamList>(
+  //   route: T,
+  //   params: RootStackParamList[T]
+  // ) => {
+  //   setOpen(null);
+  //   nav.navigate({ name: route, params } as any);
+  // };
+
+  const openUrl = async (url: string) => {
+    try {
+      if (!url) return;
+      const ok = await Linking.canOpenURL(url);
+      if (!ok) return Alert.alert("Can't open link");
+      await Linking.openURL(url);
+    } catch {
+      Alert.alert("Can't open link");
+    }
+  };
+
+  const onSubmit = () => {
+    const v = email.trim();
+    if (!v) return Alert.alert("Please enter your email");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v))
+      return Alert.alert("Please enter a valid email");
+
+    Alert.alert("Thanks!", "You are subscribed.");
+    setEmail("");
+  };
 
   return (
     <View style={styles.wrap}>
@@ -27,7 +80,7 @@ export default function Footer() {
       </View>
 
       {/* Copyright */}
-      <Text style={styles.copy}>@{year} AATienda All right reserved</Text>
+      <Text style={styles.copy}>© {year} AATienda. All rights reserved.</Text>
 
       {/* Subscribe */}
       <Text style={styles.subscribeTitle}>
@@ -36,11 +89,18 @@ export default function Footer() {
 
       <View style={styles.subscribeRow}>
         <TextInput
-          placeholder=""
+          value={email}
+          onChangeText={setEmail}
+          placeholder="Email address"
           placeholderTextColor="#999"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
           style={styles.input}
+          returnKeyType="done"
+          onSubmitEditing={onSubmit}
         />
-        <Pressable style={styles.submitBtn}>
+        <Pressable style={styles.submitBtn} onPress={onSubmit}>
           <Text style={styles.submitText}>Submit</Text>
         </Pressable>
       </View>
@@ -52,11 +112,26 @@ export default function Footer() {
           open={open === "about"}
           onPress={() => toggle("about")}
         >
-          <Pressable style={styles.linkRow} onPress={() => {}}>
-            <Text style={styles.linkText}>Our Story</Text>
+          <Pressable style={styles.linkRow} onPress={() => go("AboutAATienda")}>
+            <Text style={styles.linkText}>About us</Text>
           </Pressable>
-          <Pressable style={styles.linkRow} onPress={() => {}}>
-            <Text style={styles.linkText}>Brands</Text>
+
+          <Pressable style={styles.linkRow} onPress={() => go("Seller")}>
+            <Text style={styles.linkText}>Affiliate Program</Text>
+          </Pressable>
+
+          <Pressable
+            style={styles.linkRow}
+            onPress={() => go("AATiendaBusiness" as any)}
+          >
+            <Text style={styles.linkText}>Become a partner</Text>
+          </Pressable>
+
+          <Pressable
+            style={styles.linkRow}
+            onPress={() => go("MainAccount" as any)}
+          >
+            <Text style={styles.linkText}>My Account</Text>
           </Pressable>
         </AccordionRow>
 
@@ -65,14 +140,33 @@ export default function Footer() {
           open={open === "policies"}
           onPress={() => toggle("policies")}
         >
-          <Pressable style={styles.linkRow} onPress={() => {}}>
+          <Pressable style={styles.linkRow} onPress={() => go("RefundForm")}>
+            <Text style={styles.linkText}>Refund Form</Text>
+          </Pressable>
+
+          <Pressable
+            style={styles.linkRow}
+            onPress={() => go("PrivacyPolicy" as any)}
+          >
+            <Text style={styles.linkText}>Privacy Policy</Text>
+          </Pressable>
+
+          <Pressable
+            style={styles.linkRow}
+            onPress={() => go("TermsOfService")}
+          >
+            <Text style={styles.linkText}>Terms of Service</Text>
+          </Pressable>
+
+          <Pressable
+            style={styles.linkRow}
+            onPress={() => go("ShippingPolicy")}
+          >
             <Text style={styles.linkText}>Shipping Policy</Text>
           </Pressable>
-          <Pressable style={styles.linkRow} onPress={() => {}}>
+
+          <Pressable style={styles.linkRow} onPress={() => go("RefundPolicy")}>
             <Text style={styles.linkText}>Returns & Refunds</Text>
-          </Pressable>
-          <Pressable style={styles.linkRow} onPress={() => {}}>
-            <Text style={styles.linkText}>Privacy Policy</Text>
           </Pressable>
         </AccordionRow>
 
@@ -81,11 +175,26 @@ export default function Footer() {
           open={open === "care"}
           onPress={() => toggle("care")}
         >
-          <Pressable style={styles.linkRow} onPress={() => {}}>
+          <Pressable
+            style={styles.linkRow}
+            onPress={() =>
+              openUrl(
+                "https://wa.me/+971507108807?text=Hello%20AATienda%20Support"
+              )
+            }
+          >
             <Text style={styles.linkText}>Contact Us</Text>
           </Pressable>
-          <Pressable style={styles.linkRow} onPress={() => {}}>
+
+          <Pressable style={styles.linkRow} onPress={() => go("Faqs")}>
             <Text style={styles.linkText}>FAQ</Text>
+          </Pressable>
+
+          <Pressable
+            style={styles.linkRow}
+            onPress={() => go("GoldDiamondSteps")}
+          >
+            <Text style={styles.linkText}>Gold & Diamond Steps</Text>
           </Pressable>
         </AccordionRow>
       </View>
@@ -96,7 +205,7 @@ export default function Footer() {
           <Feather name="mail" size={22} color="#111" />
           <Text
             style={styles.contactText}
-            onPress={() => Linking.openURL("mailto:store@aatienda.com")}
+            onPress={() => openUrl("mailto:store@aatienda.com")}
           >
             store@aatienda.com
           </Text>
@@ -106,7 +215,7 @@ export default function Footer() {
           <FontAwesome5 name="whatsapp" size={22} color="#111" />
           <Text
             style={styles.contactText}
-            onPress={() => Linking.openURL("tel:+971507108807")}
+            onPress={() => openUrl("tel:+971507108807")}
           >
             (+971) 50 710 8807
           </Text>
@@ -116,12 +225,36 @@ export default function Footer() {
       {/* Social */}
       <Text style={styles.follow}>Follow us on:</Text>
       <View style={styles.socialRow}>
-        <SocialIcon name="logo-facebook" onPress={() => {}} />
-        <SocialIcon name="logo-instagram" onPress={() => {}} />
-        <SocialIcon name="logo-youtube" onPress={() => {}} />
-        <SocialIcon name="logo-tiktok" onPress={() => {}} />
-        <SocialIcon name="logo-pinterest" onPress={() => {}} />
-        <SocialIcon name="logo-snapchat" onPress={() => {}} />
+        <SocialIcon
+          name="logo-facebook"
+          onPress={() => openUrl(SOCIAL.facebook)}
+          disabled={!SOCIAL.facebook}
+        />
+        <SocialIcon
+          name="logo-instagram"
+          onPress={() => openUrl(SOCIAL.instagram)}
+          disabled={!SOCIAL.instagram}
+        />
+        <SocialIcon
+          name="logo-youtube"
+          onPress={() => openUrl(SOCIAL.youtube)}
+          disabled={!SOCIAL.youtube}
+        />
+        <SocialIcon
+          name="logo-tiktok"
+          onPress={() => openUrl(SOCIAL.tiktok)}
+          disabled={!SOCIAL.tiktok}
+        />
+        <SocialIcon
+          name="logo-pinterest"
+          onPress={() => openUrl(SOCIAL.pinterest)}
+          disabled={!SOCIAL.pinterest}
+        />
+        <SocialIcon
+          name="logo-snapchat"
+          onPress={() => openUrl(SOCIAL.snapchat)}
+          disabled={!SOCIAL.snapchat}
+        />
       </View>
 
       {/* Payment title */}
@@ -129,7 +262,6 @@ export default function Footer() {
         MULTIPLE PAYMENT METHODS{"\n"}FOR YOUR CONVENIENCE
       </Text>
 
-      {/* Payment icons row (placeholders) */}
       <View style={styles.payRow}>
         <PayPill label="Pay" />
         <PayPill label="GPay" />
@@ -173,13 +305,20 @@ function AccordionRow({
 function SocialIcon({
   name,
   onPress,
+  disabled,
 }: {
   name: any;
   onPress: () => void;
+  disabled?: boolean;
 }) {
   return (
-    <TouchableOpacity activeOpacity={0.85} style={styles.socialBtn} onPress={onPress}>
-      <Ionicons name={name} size={18} color="#333" />
+    <TouchableOpacity
+      activeOpacity={0.85}
+      style={[styles.socialBtn, disabled && styles.socialBtnDisabled]}
+      onPress={onPress}
+      disabled={disabled}
+    >
+      <Ionicons name={name} size={18} color={disabled ? "#999" : "#333"} />
     </TouchableOpacity>
   );
 }
@@ -187,7 +326,9 @@ function SocialIcon({
 function PayPill({ label, bold }: { label: string; bold?: boolean }) {
   return (
     <View style={styles.payPill}>
-      <Text style={[styles.payText, bold && { fontWeight: "800" }]}>{label}</Text>
+      <Text style={[styles.payText, bold && { fontWeight: "800" }]}>
+        {label}
+      </Text>
     </View>
   );
 }
@@ -306,6 +447,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#e9e9e9",
     alignItems: "center",
     justifyContent: "center",
+  },
+  socialBtnDisabled: {
+    backgroundColor: "#f2f2f2",
   },
 
   payTitle: {

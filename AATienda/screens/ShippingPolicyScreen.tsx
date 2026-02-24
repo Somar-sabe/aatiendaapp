@@ -3,7 +3,10 @@
 
 import React, { useMemo } from "react";
 import { View, Text, StyleSheet, ScrollView, useWindowDimensions } from "react-native";
-
+import HeaderUtilityBar from "@/components/HeaderUtilityBar";
+import AppHeader from "@/components/AppHeader";
+import AnnouncementBar from "@/components/AnnouncementBar";
+import Footer from "@/components/footer";
 export default function ShippingPolicyScreen() {
   const { width } = useWindowDimensions();
   const isMobile = width < 749;
@@ -14,6 +17,9 @@ export default function ShippingPolicyScreen() {
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.content}>
+              <AnnouncementBar />
+              <HeaderUtilityBar />
+              <AppHeader />
       <Text style={H1}>Shipping Policy</Text>
 
       <Text style={P}>

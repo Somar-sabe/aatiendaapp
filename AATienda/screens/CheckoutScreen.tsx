@@ -10,6 +10,10 @@ import {
 } from "react-native";
 import { useCart, type CartItemType } from "../context/CartContext";
 import { createCheckout } from "../api/checkout";
+import HeaderUtilityBar from "@/components/HeaderUtilityBar";
+import AppHeader from "@/components/AppHeader";
+import AnnouncementBar from "@/components/AnnouncementBar";
+import Footer from "@/components/footer";
 
 function priceToNumber(price: string) {
   const n = Number(String(price).replace(/[^0-9.]/g, ""));
@@ -50,6 +54,9 @@ export default function CheckoutScreen() {
 
   return (
     <View style={styles.container}>
+            <AnnouncementBar />
+            <HeaderUtilityBar />
+            <AppHeader />
       <Text style={styles.title}>Checkout</Text>
 
       <FlatList
@@ -79,6 +86,7 @@ export default function CheckoutScreen() {
       <TouchableOpacity style={styles.payBtn} onPress={handlePayment}>
         <Text style={styles.payText}>Pay Now</Text>
       </TouchableOpacity>
+       <Footer />
     </View>
   );
 }

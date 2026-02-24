@@ -2,10 +2,16 @@ import React from "react";
 import FirstSection from "@/components/Firstmen";
 import JustForYouSection from "@/components/secondmen";
 import { View, StyleSheet, SafeAreaView } from "react-native";
-
+import HeaderUtilityBar from "@/components/HeaderUtilityBar";
+import AppHeader from "@/components/AppHeader";
+import AnnouncementBar from "@/components/AnnouncementBar";
+import Footer from "@/components/footer";
 export default function MenScreen() {
   return (
     <SafeAreaView style={styles.safe}>
+          <AnnouncementBar />
+          <HeaderUtilityBar />
+          <AppHeader />
       <View style={styles.container}>
         <FirstSection />
         <JustForYouSection />

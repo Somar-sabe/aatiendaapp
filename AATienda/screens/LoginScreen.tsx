@@ -14,6 +14,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../navigation/StackNavigator";
+import HeaderUtilityBar from "@/components/HeaderUtilityBar";
+import AppHeader from "@/components/AppHeader";
+import AnnouncementBar from "@/components/AnnouncementBar";
+import Footer from "@/components/footer";
 
 type Nav = NativeStackNavigationProp<RootStackParamList, "Login">;
 
@@ -36,6 +40,9 @@ export default function LoginScreen() {
 
   return (
     <ImageBackground source={{ uri: BG }} style={styles.bg} resizeMode="cover">
+            <AnnouncementBar />
+            <HeaderUtilityBar />
+            <AppHeader />
       <View style={styles.overlay} />
 
       <KeyboardAvoidingView

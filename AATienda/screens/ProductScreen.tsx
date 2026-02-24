@@ -11,10 +11,12 @@ import {
 } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
-
+import HeaderUtilityBar from "@/components/HeaderUtilityBar";
+import AppHeader from "@/components/AppHeader";
+import AnnouncementBar from "@/components/AnnouncementBar";
 import { RootStackParamList } from "../navigation/StackNavigator";
 import { useCart, CartItemType } from "../context/CartContext";
-
+import Footer from "@/components/footer";
 import ProductDetailsTabs from "../components/ProductDetailsTabs";
 import ScreenLayout from "../components/ScreenLayout";
 
@@ -74,6 +76,9 @@ export default function ProductScreen({ route, navigation }: Props) {
   if (!product) {
     return (
       <ScreenLayout>
+              <AnnouncementBar />
+              <HeaderUtilityBar />
+              <AppHeader />
         <View style={styles.center}>
           <Text style={{ fontWeight: "700" }}>No product data found.</Text>
           <Pressable style={styles.backBtn} onPress={() => navigation.goBack()}>
@@ -106,11 +111,17 @@ export default function ProductScreen({ route, navigation }: Props) {
     <ScreenLayout>
       <SafeAreaView style={styles.safe}>
         <View style={styles.container}>
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            // ✅ مهم جدًا: حتى ما يختفي المحتوى تحت الـ sticky buttons
-            contentContainerStyle={[styles.scrollContent, { paddingBottom: 170 }]}
-          >
+<ScrollView
+  showsVerticalScrollIndicator={false}
+  contentContainerStyle={[
+    styles.scrollContent,
+    {
+      paddingBottom: 170,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+  ]}
+>
             {/* Breadcrumb */}
             <Text style={styles.breadcrumb}>
               Home {"\u203A"} {productForCart.name}
@@ -122,7 +133,7 @@ export default function ProductScreen({ route, navigation }: Props) {
                 <Image
                   source={{ uri: productForCart.image }}
                   style={styles.image}
-                  resizeMode="contain"
+                  resizeMode="cover"
                 />
               ) : (
                 <View style={[styles.image, { backgroundColor: "#f1f1f1" }]} />
@@ -300,17 +311,21 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 
-  imageFrame: {
-    width: "100%",
-    aspectRatio: 1,
-    borderWidth: 1,
-    borderColor: BORDER,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
-  },
-  image: { width: "92%", height: "92%" },
+imageFrame: {
+  width: "100%",
+  height: 520,              // ✅ مثل الويب (غيّرها إذا بدك أطول)
+  marginHorizontal: -14,     // ✅ يلغي paddingHorizontal تبع الصفحة ويخليها full width
+  borderWidth: 1,
+  borderColor: BORDER,
+  backgroundColor: "#fff",
+  position: "relative",
+  overflow: "hidden",       // ✅ مهم مع cover
+},
+
+image: {
+  width: "100%",
+  height: "100%",
+},
 
   imageRightIcons: {
     position: "absolute",

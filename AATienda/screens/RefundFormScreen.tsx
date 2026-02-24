@@ -15,7 +15,10 @@ import {
   ActivityIndicator,
   Platform,
 } from "react-native";
-
+import HeaderUtilityBar from "@/components/HeaderUtilityBar";
+import AppHeader from "@/components/AppHeader";
+import AnnouncementBar from "@/components/AnnouncementBar";
+import Footer from "@/components/footer";
 const API_URL = "https://partners.aatienda.com/api/refund-request"; // ✅ change to your endpoint
 
 type Payload = {
@@ -110,6 +113,9 @@ export default function RefundFormScreen() {
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={{ paddingBottom: 34 }}>
+              <AnnouncementBar />
+              <HeaderUtilityBar />
+              <AppHeader />
       <View
         style={[
           styles.container,

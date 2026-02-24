@@ -12,7 +12,10 @@ import {
   useWindowDimensions,
   Platform,
 } from "react-native";
-
+import HeaderUtilityBar from "@/components/HeaderUtilityBar";
+import AppHeader from "@/components/AppHeader";
+import AnnouncementBar from "@/components/AnnouncementBar";
+import Footer from "@/components/footer";
 const EMAIL = "privacy@aatienda.com";
 
 export default function PrivacyPolicyScreen() {
@@ -33,6 +36,9 @@ export default function PrivacyPolicyScreen() {
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.content}>
+              <AnnouncementBar />
+              <HeaderUtilityBar />
+              <AppHeader />
       <Text style={H1}>Privacy Policy</Text>
 
       <Text style={P}>

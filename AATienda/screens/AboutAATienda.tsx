@@ -9,7 +9,10 @@ import {
   useWindowDimensions,
   Platform,
 } from "react-native";
-
+import HeaderUtilityBar from "@/components/HeaderUtilityBar";
+import AppHeader from "@/components/AppHeader";
+import AnnouncementBar from "@/components/AnnouncementBar";
+import Footer from "@/components/footer";
 const IMAGE_URL =
   "https://cdn.shopify.com/s/files/1/0725/5418/5021/files/Rectangle_85_page-0001.jpg?v=1707804420";
 
@@ -52,6 +55,9 @@ export default function AboutAATienda() {
       contentContainerStyle={styles.pageContent}
       showsVerticalScrollIndicator={false}
     >
+              <HeaderUtilityBar />
+              <AnnouncementBar />
+              <AppHeader />
       {isMobile ? (
         // ✅ MOBILE (same as your "mobile-about")
         <View style={styles.mobileWrap}>
@@ -115,6 +121,7 @@ export default function AboutAATienda() {
           </View>
         </View>
       )}
+       <Footer />
     </ScrollView>
   );
 }

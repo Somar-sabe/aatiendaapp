@@ -5,6 +5,10 @@
 // - WhatsApp button opens chat
 
 import React, { useMemo } from "react";
+import HeaderUtilityBar from "@/components/HeaderUtilityBar";
+import AppHeader from "@/components/AppHeader";
+import AnnouncementBar from "@/components/AnnouncementBar";
+import Footer from "@/components/footer";
 import {
   View,
   Text,
@@ -72,6 +76,9 @@ export default function GoldDiamondStepsScreen() {
       ]}
       showsVerticalScrollIndicator={false}
     >
+              <AnnouncementBar />
+              <HeaderUtilityBar />
+              <AppHeader />
       {/* Optional small header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Gold & Diamond Custom Order</Text>

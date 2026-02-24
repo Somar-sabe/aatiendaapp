@@ -8,6 +8,10 @@
 // - FAQ accordion with rotating arrow
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import HeaderUtilityBar from "@/components/HeaderUtilityBar";
+import AppHeader from "@/components/AppHeader";
+import AnnouncementBar from "@/components/AnnouncementBar";
+import Footer from "@/components/footer";
 import {
   View,
   Text,
@@ -224,6 +228,9 @@ export default function FurnitureLandingScreen() {
       contentContainerStyle={{ paddingBottom: 40, backgroundColor: COLORS.white }}
       showsVerticalScrollIndicator={false}
     >
+              <AnnouncementBar />
+              <HeaderUtilityBar />
+              <AppHeader />
       {/* Title */}
       <View style={[styles.center, { paddingTop: isMobile ? 24 : 34 }]}>
         <Text style={[styles.firstText, { fontSize: isMobile ? 22 : 32 }]}>
@@ -457,6 +464,7 @@ export default function FurnitureLandingScreen() {
           ))}
         </View>
       </View>
+       <Footer />
     </ScrollView>
   );
 }

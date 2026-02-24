@@ -2,7 +2,10 @@
 // Copy-paste ready. Same sections: Hero w/ overlay + 3 benefits (row on desktop, column on mobile)
 // + "It's easy to start" image + steps + Seller FAQs accordion (plus/minus).
 // Buttons open the register page in browser.
-
+import HeaderUtilityBar from "@/components/HeaderUtilityBar";
+import AppHeader from "@/components/AppHeader";
+import AnnouncementBar from "@/components/AnnouncementBar";
+import Footer from "@/components/footer";
 import React, { useMemo, useState } from "react";
 import {
   View,
@@ -123,6 +126,9 @@ export default function AATiendaBusinessScreen() {
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
+          <AnnouncementBar />
+          <HeaderUtilityBar />
+          <AppHeader />
       {/* HERO */}
       <ImageBackground source={{ uri: HERO_IMG }} style={[styles.hero, { height: heroHeight }]}>
         <View style={styles.heroOverlay}>
@@ -224,6 +230,7 @@ export default function AATiendaBusinessScreen() {
       </View>
 
       <View style={{ height: 24 }} />
+       <Footer />
     </ScrollView>
   );
 }

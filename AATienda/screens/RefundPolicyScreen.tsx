@@ -11,7 +11,10 @@ import {
   useWindowDimensions,
   Platform,
 } from "react-native";
-
+import HeaderUtilityBar from "@/components/HeaderUtilityBar";
+import AppHeader from "@/components/AppHeader";
+import AnnouncementBar from "@/components/AnnouncementBar";
+import Footer from "@/components/footer";
 const PHONE = "+971507108807";
 const EMAIL_STORE = "Store@aatienda.com";
 

@@ -7,6 +7,10 @@
 // - Opens Shopify links with Linking
 
 import React, { useEffect, useRef, useState } from "react";
+import HeaderUtilityBar from "@/components/HeaderUtilityBar";
+import AppHeader from "@/components/AppHeader";
+import AnnouncementBar from "@/components/AnnouncementBar";
+import Footer from "@/components/footer";
 import {
   View,
   Text,
@@ -96,6 +100,9 @@ export default function FurnitureScreen() {
       contentContainerStyle={{ backgroundColor: COLORS.white, paddingBottom: 32 }}
       showsVerticalScrollIndicator={false}
     >
+              <AnnouncementBar />
+              <HeaderUtilityBar />
+              <AppHeader />
       {/* Banner */}
       <View style={[styles.bannerWrap, { marginBottom: isMobile ? 0 : 64 }]}>
         <ShimmerImage uri={BANNER} height={bannerHeight} />

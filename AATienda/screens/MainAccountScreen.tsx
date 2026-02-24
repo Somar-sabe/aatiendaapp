@@ -14,7 +14,10 @@ import {
   FlatList,
   Platform,
 } from "react-native";
-
+import HeaderUtilityBar from "@/components/HeaderUtilityBar";
+import AppHeader from "@/components/AppHeader";
+import AnnouncementBar from "@/components/AnnouncementBar";
+import Footer from "@/components/footer";
 type PaneKey = "orders" | "returns" | "payments" | "profile" | "addresses";
 
 type Order = {
@@ -200,6 +203,9 @@ export default function MainAccountScreen({
 
   return (
     <View style={styles.page}>
+              <AnnouncementBar />
+              <HeaderUtilityBar />
+              <AppHeader />
       <View style={[styles.shell, isDesktop ? styles.shellDesktop : styles.shellMobile]}>
         {/* Sidebar on desktop */}
         {isDesktop && (

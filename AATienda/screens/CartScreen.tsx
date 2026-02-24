@@ -12,6 +12,9 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import { RootStackParamList } from "../navigation/StackNavigator";
 import ScreenLayout from "../components/ScreenLayout";
+import HeaderUtilityBar from "@/components/HeaderUtilityBar";
+import AppHeader from "@/components/AppHeader";
+import AnnouncementBar from "@/components/AnnouncementBar";
 import Footer from "@/components/footer";
 import { useCart } from "../context/CartContext";
 
@@ -49,6 +52,9 @@ export default function CartScreen({ navigation }: Props) {
 
   return (
     <ScreenLayout scroll={false} showFooter={false}>
+            <AnnouncementBar />
+            <HeaderUtilityBar />
+            <AppHeader />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.page}

@@ -105,6 +105,23 @@ export default function CategoryGrid() {
       return;
     }
 
+    // ✅ Furniture Pages (we created 2)
+    if (item.handle === "furniture") {
+      navigation.navigate("Furniture");
+      return;
+    }
+
+    if (item.handle === "furniture-packages") {
+      navigation.navigate("FurnitureLanding");
+      return;
+    }
+
+    // ✅ Gold & Diamonds (steps page we created)
+    if (item.handle === "gold-diamonds") {
+      navigation.navigate("GoldDiamondSteps");
+      return;
+    }
+
     // ✅ all others keep going to Collection
     navigation.navigate("Collection", { handle: item.handle, title });
   };
@@ -132,7 +149,11 @@ export default function CategoryGrid() {
                 { width: ITEM_SIZE, height: ITEM_SIZE, borderRadius: 10 },
               ]}
             >
-              <Image source={{ uri: item.image }} style={styles.image} resizeMode="cover" />
+              <Image
+                source={{ uri: item.image }}
+                style={styles.image}
+                resizeMode="cover"
+              />
             </View>
 
             <Text style={styles.title} numberOfLines={2}>
@@ -159,7 +180,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 10,
-    rowGap: 26, // vertical spacing between rows (like the screenshot)
+    rowGap: 26,
   },
   item: {
     alignItems: "center",
