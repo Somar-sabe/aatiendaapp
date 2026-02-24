@@ -52,7 +52,7 @@ export default function CartScreen({ navigation }: Props) {
 
   return (
     <ScreenLayout scroll={false} showFooter={false}>
-            <AnnouncementBar />
+             
             <HeaderUtilityBar />
             <AppHeader />
       <ScrollView

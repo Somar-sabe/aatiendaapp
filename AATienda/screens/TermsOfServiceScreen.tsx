@@ -33,7 +33,7 @@ export default function TermsOfServiceScreen() {
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.content}>
-              <AnnouncementBar />
+               
               <HeaderUtilityBar />
               <AppHeader />
       <Text style={H1}>Terms of Service</Text>

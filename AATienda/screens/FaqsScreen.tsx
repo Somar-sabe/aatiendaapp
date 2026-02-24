@@ -50,7 +50,7 @@ const FAQS: FaqItem[] = [
 function ArrowIcon({ rotated }: { rotated: boolean }) {
   return (
     <View style={[styles.arrowWrap, rotated && styles.arrowRotated]}>
-              <AnnouncementBar />
+               
               <HeaderUtilityBar />
               <AppHeader />
       <Svg width={12} height={12} viewBox="0 0 12 12" fill="none">

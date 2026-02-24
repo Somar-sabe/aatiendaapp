@@ -228,7 +228,7 @@ export default function FurnitureLandingScreen() {
       contentContainerStyle={{ paddingBottom: 40, backgroundColor: COLORS.white }}
       showsVerticalScrollIndicator={false}
     >
-              <AnnouncementBar />
+               
               <HeaderUtilityBar />
               <AppHeader />
       {/* Title */}

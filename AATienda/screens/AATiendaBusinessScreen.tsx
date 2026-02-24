@@ -126,7 +126,7 @@ export default function AATiendaBusinessScreen() {
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
-          <AnnouncementBar />
+           
           <HeaderUtilityBar />
           <AppHeader />
       {/* HERO */}

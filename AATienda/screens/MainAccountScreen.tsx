@@ -203,7 +203,7 @@ export default function MainAccountScreen({
 
   return (
     <View style={styles.page}>
-              <AnnouncementBar />
+               
               <HeaderUtilityBar />
               <AppHeader />
       <View style={[styles.shell, isDesktop ? styles.shellDesktop : styles.shellMobile]}>

@@ -8,7 +8,7 @@ import Footer from "@/components/footer";
 export default function Seller() {
   return (
     <SafeAreaView style={styles.safe}>
-            <AnnouncementBar />
+             
             <HeaderUtilityBar />
             <AppHeader />
       <View style={styles.container}>

@@ -1,7 +1,7 @@
 import React from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 
-import AnnouncementBar from "./AnnouncementBar";
+ 
 import AppHeader from "./AppHeader";
 import HeaderUtilityBar from "./HeaderUtilityBar";
 import Footer from "./footer";
@@ -18,7 +18,7 @@ export default function ScreenLayout({
   return (
     <View style={styles.container}>
          <HeaderUtilityBar />
-      <AnnouncementBar />
+       
       <AppHeader />
    
 

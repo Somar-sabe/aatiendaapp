@@ -46,7 +46,7 @@ const WHATS_NEW = [
 export default function HomeScreen({ navigation }: Props) {
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
-      <AnnouncementBar />
+       
       <HeaderUtilityBar />
       <AppHeader />
 

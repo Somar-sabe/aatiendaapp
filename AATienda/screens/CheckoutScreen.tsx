@@ -54,7 +54,7 @@ export default function CheckoutScreen() {
 
   return (
     <View style={styles.container}>
-            <AnnouncementBar />
+             
             <HeaderUtilityBar />
             <AppHeader />
       <Text style={styles.title}>Checkout</Text>

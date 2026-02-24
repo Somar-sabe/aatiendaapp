@@ -17,7 +17,7 @@ export default function ShippingPolicyScreen() {
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.content}>
-              <AnnouncementBar />
+               
               <HeaderUtilityBar />
               <AppHeader />
       <Text style={H1}>Shipping Policy</Text>

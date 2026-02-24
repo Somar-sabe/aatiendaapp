@@ -16,10 +16,12 @@ import { RootStackParamList } from "../navigation/StackNavigator";
 import { useCart, CartItemType } from "../context/CartContext";
 import ProductDetailsTabs from "../components/ProductDetailsTabs";
 import RelatedProductsSection from "@/components/RelatedProductsSection";
+
 import HeaderUtilityBar from "@/components/HeaderUtilityBar";
 import AppHeader from "@/components/AppHeader";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Footer from "@/components/footer";
+
 type Props = NativeStackScreenProps<RootStackParamList, "Product">;
 
 const BRAND_BROWN = "#54443D";
@@ -28,7 +30,7 @@ const TEXT_GRAY = "#777";
 const BORDER = "#E5E5E5";
 const PRICE_RED = "#C55A6A";
 
-// ✅ height reserved for sticky buttons (content paddingBottom)
+// ✅ sticky bar space
 const STICKY_HEIGHT = 130;
 
 export default function ProductScreen({ route, navigation }: Props) {
@@ -41,7 +43,6 @@ export default function ProductScreen({ route, navigation }: Props) {
   const [descHtml, setDescHtml] = useState<string>("");
   const [loadingDesc, setLoadingDesc] = useState(false);
 
-  // ✅ make sure gid is correct
   const gid =
     String(product?.id || "").startsWith("gid://")
       ? String(product?.id || "")
@@ -107,14 +108,22 @@ export default function ProductScreen({ route, navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.safe}>
-      {/* ✅ MUST be relative so sticky bar stays fixed */}
+      {/* ✅ Header OUTSIDE scroll */}
+       
+      <HeaderUtilityBar />
+      <AppHeader />
+
+      {/* ✅ Screen area (relative) */}
       <View style={styles.screen}>
-                      <AnnouncementBar />
-                      <HeaderUtilityBar />
-                      <AppHeader />
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={[styles.scrollContent, { paddingBottom: STICKY_HEIGHT + 30 }]}
+          contentContainerStyle={[
+            styles.scrollContent,
+            {
+              // ✅ reserve space for sticky bar + footer
+              paddingBottom: STICKY_HEIGHT + 30,
+            },
+          ]}
         >
           {/* Breadcrumb */}
           <Text style={styles.breadcrumb}>
@@ -124,12 +133,15 @@ export default function ProductScreen({ route, navigation }: Props) {
           {/* Image Frame */}
           <View style={styles.imageFrame}>
             {!!productForCart.image ? (
-              <Image source={{ uri: productForCart.image }} style={styles.image} resizeMode="cover" />
+              <Image
+                source={{ uri: productForCart.image }}
+                style={styles.image}
+                resizeMode="cover"
+              />
             ) : (
               <View style={[styles.image, { backgroundColor: "#f1f1f1" }]} />
             )}
 
-            {/* right overlay icons */}
             <View style={styles.imageRightIcons}>
               <Pressable style={styles.iconCircle} onPress={() => {}}>
                 <Ionicons name="share-social-outline" size={20} color="#111" />
@@ -140,7 +152,6 @@ export default function ProductScreen({ route, navigation }: Props) {
               </Pressable>
             </View>
 
-            {/* left zoom icon */}
             <View style={styles.imageLeftIcons}>
               <Pressable style={styles.iconCircleSmall} onPress={() => {}}>
                 <Ionicons name="search" size={16} color="#111" />
@@ -148,7 +159,7 @@ export default function ProductScreen({ route, navigation }: Props) {
             </View>
           </View>
 
-          {/* arrows under image left */}
+          {/* arrows */}
           <View style={styles.arrowsRow}>
             <Pressable style={styles.arrowBtn} onPress={() => {}}>
               <Ionicons name="arrow-back" size={18} color="#111" />
@@ -158,10 +169,8 @@ export default function ProductScreen({ route, navigation }: Props) {
             </Pressable>
           </View>
 
-          {/* Title */}
           <Text style={styles.title}>{productForCart.name}</Text>
 
-          {/* Price row */}
           <View style={styles.priceRow}>
             <Text style={styles.priceNow}>{productForCart.price} AED</Text>
             {!!compareAt && <Text style={styles.priceOld}>{compareAt} AED</Text>}
@@ -191,7 +200,7 @@ export default function ProductScreen({ route, navigation }: Props) {
             <SizePill value="XL" active={size === "XL"} onPress={() => setSize("XL")} />
           </View>
 
-          {/* Payment methods */}
+          {/* Payment */}
           <Text style={styles.payCaption}>We support the following payment methods:</Text>
           <View style={styles.payRow}>
             <PayIcon label="AMEX" />
@@ -205,18 +214,19 @@ export default function ProductScreen({ route, navigation }: Props) {
 
           {/* Tabs */}
           <ProductDetailsTabs descriptionHtml={descHtml} loadingDescription={loadingDesc} />
-
           {loadingDesc && !descHtml ? (
             <View style={{ paddingVertical: 10 }}>
               <ActivityIndicator />
             </View>
           ) : null}
 
-          {/* Related products scroll with page */}
           <RelatedProductsSection productIdGid={gid} />
+
+          {/* ✅ Footer MUST be INSIDE scroll */}
+          <Footer />
         </ScrollView>
 
-        {/* ✅ FIXED STICKY BUTTONS (always visible while scrolling) */}
+        {/* ✅ Sticky always visible */}
         <View style={styles.stickyBar}>
           <Pressable style={styles.addToCart} onPress={onAdd}>
             <Text style={styles.addToCartText}>ADD TO CART</Text>
@@ -226,7 +236,6 @@ export default function ProductScreen({ route, navigation }: Props) {
             <Text style={styles.buyNowText}>Buy Now</Text>
           </Pressable>
         </View>
-        <Footer />
       </View>
     </SafeAreaView>
   );
@@ -264,7 +273,6 @@ function PayIcon({ label, bold }: { label: string; bold?: boolean }) {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#fff" },
 
-  // ✅ important: relative container (NOT inside any outer ScrollView)
   screen: {
     flex: 1,
     backgroundColor: "#fff",
@@ -299,10 +307,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
 
-  image: {
-    width: "100%",
-    height: "100%",
-  },
+  image: { width: "100%", height: "100%" },
 
   imageRightIcons: {
     position: "absolute",
@@ -311,12 +316,7 @@ const styles = StyleSheet.create({
     gap: 12,
     alignItems: "center",
   },
-
-  imageLeftIcons: {
-    position: "absolute",
-    left: 10,
-    top: 10,
-  },
+  imageLeftIcons: { position: "absolute", left: 10, top: 10 },
 
   iconCircle: {
     width: 36,
@@ -328,7 +328,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
   iconCircleSmall: {
     width: 30,
     height: 30,
@@ -340,13 +339,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  arrowsRow: {
-    flexDirection: "row",
-    gap: 10,
-    marginTop: 10,
-    marginBottom: 8,
-  },
-
+  arrowsRow: { flexDirection: "row", gap: 10, marginTop: 10, marginBottom: 8 },
   arrowBtn: {
     width: 44,
     height: 36,
@@ -373,9 +366,7 @@ const styles = StyleSheet.create({
     alignItems: "baseline",
     gap: 14,
   },
-
   priceNow: { fontSize: 16, fontWeight: "800", color: PRICE_RED },
-
   priceOld: {
     fontSize: 14,
     color: "#666",
@@ -401,9 +392,7 @@ const styles = StyleSheet.create({
     width: 150,
     backgroundColor: "#fff",
   },
-
   qtyBtn: { width: 46, alignItems: "center", justifyContent: "center" },
-
   qtyMid: {
     flex: 1,
     borderLeftWidth: 1,
@@ -412,7 +401,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
   qtyText: { fontWeight: "700", color: "#222", fontSize: 14 },
 
   sizeCaption: {
@@ -422,14 +410,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
   },
-
-  sizeRow: {
-    marginTop: 10,
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 10,
-  },
-
+  sizeRow: { marginTop: 10, flexDirection: "row", justifyContent: "center", gap: 10 },
   sizePill: {
     minWidth: 38,
     height: 28,
@@ -437,10 +418,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 12,
   },
-
   sizePillActive: { backgroundColor: BRAND_BROWN },
   sizePillIdle: { backgroundColor: "#9B9B9B" },
-
   sizeText: { fontSize: 12, fontWeight: "800" },
   sizeTextActive: { color: "#fff" },
   sizeTextIdle: { color: "#fff" },
@@ -452,15 +431,7 @@ const styles = StyleSheet.create({
     color: "#777",
     fontWeight: "600",
   },
-
-  payRow: {
-    marginTop: 10,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    gap: 10,
-  },
-
+  payRow: { marginTop: 10, flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 10 },
   payIcon: {
     height: 22,
     paddingHorizontal: 10,
@@ -469,10 +440,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
   payIconText: { fontSize: 10, color: "#111", fontWeight: "700" },
 
-  // ✅ fixed bar always visible while scrolling
   stickyBar: {
     position: "absolute",
     left: 0,
@@ -487,9 +456,7 @@ const styles = StyleSheet.create({
     borderTopColor: BORDER,
     gap: 10,
 
-    // ✅ ensure it stays above scroll content (Android)
     elevation: 25,
-    // ✅ shadow (iOS)
     shadowColor: "#000",
     shadowOpacity: 0.08,
     shadowRadius: 10,
@@ -503,13 +470,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 2,
   },
-
-  addToCartText: {
-    color: "#fff",
-    fontWeight: "800",
-    letterSpacing: 2,
-    fontSize: 12,
-  },
+  addToCartText: { color: "#fff", fontWeight: "800", letterSpacing: 2, fontSize: 12 },
 
   buyNow: {
     height: 46,
@@ -518,6 +479,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 2,
   },
-
   buyNowText: { color: "#111", fontWeight: "800", fontSize: 13 },
 });

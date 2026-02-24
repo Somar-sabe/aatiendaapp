@@ -40,7 +40,7 @@ export default function LoginScreen() {
 
   return (
     <ImageBackground source={{ uri: BG }} style={styles.bg} resizeMode="cover">
-            <AnnouncementBar />
+             
             <HeaderUtilityBar />
             <AppHeader />
       <View style={styles.overlay} />

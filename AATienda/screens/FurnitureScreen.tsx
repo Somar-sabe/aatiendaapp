@@ -100,7 +100,7 @@ export default function FurnitureScreen() {
       contentContainerStyle={{ backgroundColor: COLORS.white, paddingBottom: 32 }}
       showsVerticalScrollIndicator={false}
     >
-              <AnnouncementBar />
+               
               <HeaderUtilityBar />
               <AppHeader />
       {/* Banner */}

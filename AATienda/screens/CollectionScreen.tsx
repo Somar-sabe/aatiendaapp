@@ -206,7 +206,7 @@ export default function CollectionScreen() {
   const renderHeader = () => (
     <View>
       <HeaderUtilityBar />
-      <AnnouncementBar />
+       
       <AppHeader />
 
       <View style={styles.bannerWrap}>

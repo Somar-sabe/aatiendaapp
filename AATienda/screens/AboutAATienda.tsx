@@ -56,7 +56,7 @@ export default function AboutAATienda() {
       showsVerticalScrollIndicator={false}
     >
               <HeaderUtilityBar />
-              <AnnouncementBar />
+               
               <AppHeader />
       {isMobile ? (
         // ✅ MOBILE (same as your "mobile-about")

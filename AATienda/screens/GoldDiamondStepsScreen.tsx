@@ -76,7 +76,7 @@ export default function GoldDiamondStepsScreen() {
       ]}
       showsVerticalScrollIndicator={false}
     >
-              <AnnouncementBar />
+               
               <HeaderUtilityBar />
               <AppHeader />
       {/* Optional small header */}

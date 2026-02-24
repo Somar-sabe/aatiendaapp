@@ -9,7 +9,7 @@ import Footer from "@/components/footer";
 export default function MenScreen() {
   return (
     <SafeAreaView style={styles.safe}>
-          <AnnouncementBar />
+           
           <HeaderUtilityBar />
           <AppHeader />
       <View style={styles.container}>

@@ -36,7 +36,7 @@ export default function PrivacyPolicyScreen() {
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.content}>
-              <AnnouncementBar />
+               
               <HeaderUtilityBar />
               <AppHeader />
       <Text style={H1}>Privacy Policy</Text>

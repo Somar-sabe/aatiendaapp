@@ -113,7 +113,7 @@ export default function RefundFormScreen() {
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={{ paddingBottom: 34 }}>
-              <AnnouncementBar />
+               
               <HeaderUtilityBar />
               <AppHeader />
       <View
