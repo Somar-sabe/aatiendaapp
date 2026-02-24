@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { SvgXml } from "react-native-svg";
 import { logoSvg } from "../assets/logo";
 import {
@@ -55,6 +55,9 @@ const FURNITURE_CHILDREN: DrawerLink[] = [
   { label: "Dining Tables", handle: "diningtables" },
   { label: "Mirrors", handle: "mirrors" },
   { label: "Night Stands", handle: "nightstands" },
+
+  // ✅ requested: add Furniture Packages
+  { label: "Furniture Packages", handle: "furniture-packages" },
 ];
 
 const GOLD_CHILDREN: DrawerLink[] = [
@@ -63,6 +66,14 @@ const GOLD_CHILDREN: DrawerLink[] = [
   { label: "Earrings", handle: "earrings" },
   { label: "Necklaces", handle: "necklaces" },
 ];
+
+// ✅ requested: perfume Men/Women/Unisex
+const PERFUME_CHILDREN: DrawerLink[] = [
+  { label: "Men", handle: "perfume-men" },
+  { label: "Women", handle: "perfume-women" },
+  { label: "Unisex", handle: "perfume-unisex" },
+];
+
 const SECTIONS: DrawerSection[] = [
   { label: "Women", handle: "women", children: WOMEN_CHILDREN },
   { label: "Men", handle: "men", children: MEN_CHILDREN },
@@ -70,8 +81,13 @@ const SECTIONS: DrawerSection[] = [
   { label: "Furniture", handle: "furniture", children: FURNITURE_CHILDREN },
   { label: "Electronics", handle: "electronics" },
   { label: "Gold & Diamonds", handle: "gold-diamonds", children: GOLD_CHILDREN },
-  { label: "Perfume", handle: "perfume" },
+
+  // ✅ perfume expandable
+  { label: "Perfume", handle: "perfume", children: PERFUME_CHILDREN },
+
   { label: "Best Sellers", handle: "best-sellers" },
+
+
 ];
 
 const B2B_LINKS: DrawerLink[] = [
@@ -85,10 +101,11 @@ export default function AppHeader() {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
-const [searchOpen, setSearchOpen] = useState(false);
-const [searchText, setSearchText] = useState("");
-  // ✅ which section is expanded (Women / Men)
-  const [openSection, setOpenSection] = useState<string | null>("Women"); // default open like screenshot
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchText, setSearchText] = useState("");
+
+  // ✅ which section is expanded (Women / Men / Perfume / Furniture...)
+  const [openSection, setOpenSection] = useState<string | null>("Women"); // default open
 
   const goCollection = (handle?: string, title?: string) => {
     if (!handle) return;
@@ -100,9 +117,6 @@ const [searchText, setSearchText] = useState("");
   const toggleSection = (label: string) => {
     setOpenSection((prev) => (prev === label ? null : label));
   };
-
-  const womenOpen = openSection === "Women";
-  const menOpen = openSection === "Men";
 
   const renderSectionRow = (sec: DrawerSection) => {
     const isExpandable = !!sec.children?.length;
@@ -130,7 +144,6 @@ const [searchText, setSearchText] = useState("");
           )}
         </Pressable>
 
-        {/* ✅ children list like screenshot */}
         {isExpandable && isOpen && (
           <View style={styles.childrenWrap}>
             {sec.children!.map((ch) => (
@@ -167,17 +180,16 @@ const [searchText, setSearchText] = useState("");
 
       {/* RIGHT */}
       <View style={styles.icons}>
- <TouchableOpacity
-  hitSlop={10}
-  onPress={() => {
-    setMenuOpen(false);
-    setCartOpen(false);
-    setSearchOpen(true);
-  }}
->
-  <Ionicons name="search" size={22} color="#000" />
-</TouchableOpacity>
-
+        <TouchableOpacity
+          hitSlop={10}
+          onPress={() => {
+            setMenuOpen(false);
+            setCartOpen(false);
+            setSearchOpen(true);
+          }}
+        >
+          <Ionicons name="search" size={22} color="#000" />
+        </TouchableOpacity>
 
         <TouchableOpacity hitSlop={10} onPress={() => {}}>
           <Ionicons name="heart-outline" size={22} color="#000" />
@@ -245,18 +257,16 @@ const [searchText, setSearchText] = useState("");
                 </Pressable>
               ))}
 
-      <Pressable
-        style={styles.sellRow}
-        onPress={() => {
-          setMenuOpen(false);
-          setCartOpen(false);
-          // 👇 make sure this name exists in your stack
-          navigation.navigate("Seller" as any);
-        }}
-      >
-        <Text style={styles.sellText}>Sell on AATienda</Text>
-      </Pressable>
-
+              <Pressable
+                style={styles.sellRow}
+                onPress={() => {
+                  setMenuOpen(false);
+                  setCartOpen(false);
+                  navigation.navigate("Seller" as any);
+                }}
+              >
+                <Text style={styles.sellText}>Sell on AATienda</Text>
+              </Pressable>
 
               <View style={{ height: 24 }} />
             </ScrollView>
@@ -282,21 +292,16 @@ const [searchText, setSearchText] = useState("");
           navigation.navigate("Checkout");
         }}
       />
+
       <SearchOverlay
-  open={searchOpen}
-  onClose={() => setSearchOpen(false)}
-  value={searchText}
-  onChange={setSearchText}
-  onSubmit={() => {
-    // ✅ هون بتقرر شو تعمل لما يعمل Search
-    // مثال: روح على Collection handle ثابت للبحث (إذا عندك شاشة Search خاصة)
-    // navigation.navigate("Search" as any, { q: searchText });
-
-    // حاليا بس سكّر
-    setSearchOpen(false);
-  }}
-/>
-
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        value={searchText}
+        onChange={setSearchText}
+        onSubmit={() => {
+          setSearchOpen(false);
+        }}
+      />
     </View>
   );
 }
@@ -364,7 +369,6 @@ const styles = StyleSheet.create({
   },
   linkText: { color: "#444", fontSize: 15, fontWeight: "500" },
 
-  // ✅ Nested children styling like screenshot
   childrenWrap: {
     paddingLeft: 6,
     paddingRight: 6,
