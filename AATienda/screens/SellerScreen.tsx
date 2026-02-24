@@ -1,13 +1,12 @@
 import React from "react";
-import FirstSection from "@/components/Firstmen";
 import { View, StyleSheet, SafeAreaView } from "react-native";
 import SellerLandingLikeImage from "@/components/seller";
 
-export default function MenScreen() {
+export default function Seller() {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
-        <FirstSection />
+
         <SellerLandingLikeImage/>
       </View>
     </SafeAreaView>

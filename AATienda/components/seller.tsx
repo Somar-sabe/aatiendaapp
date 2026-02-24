@@ -21,7 +21,7 @@ export default function SellerLandingLikeImage({ onStartSelling }: Props) {
         <ImageBackground
           // Replace with your real image (local require or remote URL)
           source={{
-            uri: "https://images.unsplash.com/photo-1523413651479-597eb2da0ad6?auto=format&fit=crop&w=1200&q=60",
+            uri: "https://cdn.shopify.com/s/files/1/0725/5418/5021/files/hero_section_3x_6bd10015-1095-4593-bea3-724c678e2414.png?v=1728545356",
           }}
           style={styles.hero}
           imageStyle={styles.heroImg}

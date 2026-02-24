@@ -91,6 +91,24 @@ export default function CategoryGrid() {
   const GAP = 18;
   const ITEM_SIZE = Math.floor((width - H_PADDING * 2 - GAP * 2) / 3);
 
+  const onPressCategory = (item: Category) => {
+    const title = item.title.replace("\n", " ");
+
+    // ✅ Men & Women go to their own screens
+    if (item.handle === "men") {
+      navigation.navigate("Men");
+      return;
+    }
+
+    if (item.handle === "women") {
+      navigation.navigate("Women");
+      return;
+    }
+
+    // ✅ all others keep going to Collection
+    navigation.navigate("Collection", { handle: item.handle, title });
+  };
+
   return (
     <View style={[styles.container, { paddingHorizontal: H_PADDING }]}>
       <Text style={styles.header}>Shop By Categories</Text>
@@ -106,12 +124,7 @@ export default function CategoryGrid() {
           <TouchableOpacity
             activeOpacity={0.85}
             style={[styles.item, { width: ITEM_SIZE }]}
-            onPress={() =>
-              navigation.navigate("Collection", {
-                handle: item.handle,
-                title: item.title.replace("\n", " "),
-              })
-            }
+            onPress={() => onPressCategory(item)}
           >
             <View
               style={[
@@ -119,11 +132,7 @@ export default function CategoryGrid() {
                 { width: ITEM_SIZE, height: ITEM_SIZE, borderRadius: 10 },
               ]}
             >
-              <Image
-                source={{ uri: item.image }}
-                style={styles.image}
-                resizeMode="cover"
-              />
+              <Image source={{ uri: item.image }} style={styles.image} resizeMode="cover" />
             </View>
 
             <Text style={styles.title} numberOfLines={2}>

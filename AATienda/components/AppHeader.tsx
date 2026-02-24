@@ -245,9 +245,18 @@ const [searchText, setSearchText] = useState("");
                 </Pressable>
               ))}
 
-              <Pressable style={styles.sellRow} onPress={() => {}}>
-                <Text style={styles.sellText}>Sell on AATienda</Text>
-              </Pressable>
+      <Pressable
+        style={styles.sellRow}
+        onPress={() => {
+          setMenuOpen(false);
+          setCartOpen(false);
+          // 👇 make sure this name exists in your stack
+          navigation.navigate("Seller" as any);
+        }}
+      >
+        <Text style={styles.sellText}>Sell on AATienda</Text>
+      </Pressable>
+
 
               <View style={{ height: 24 }} />
             </ScrollView>

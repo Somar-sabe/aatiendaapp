@@ -6,7 +6,9 @@ import CollectionScreen from "../screens/CollectionScreen";
 import ProductScreen from "../screens/ProductScreen";
 import CartScreen from "../screens/CartScreen";
 import CheckoutScreen from "../screens/CheckoutScreen";
-
+import Seller from "@/screens/SellerScreen";
+import MenScreen from "@/screens/MenScreen";
+import WomenScreen from "@/screens/WomenScreen";
 // ✅ ADD THESE IMPORTS
 import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
@@ -22,10 +24,11 @@ export type RootStackParamList = {
  
   Cart: undefined;
   Checkout: undefined;
-
-  // ✅ ADD THESE ROUTES
+  Seller: undefined;
   Login: undefined;
   Register: undefined;
+  Men: undefined;
+  Women: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -38,8 +41,9 @@ export default function StackNavigator() {
       <Stack.Screen name="Product" component={ProductScreen} />
       <Stack.Screen name="Cart" component={CartScreen} />
       <Stack.Screen name="Checkout" component={CheckoutScreen} />
-
-      {/* ✅ ADD THESE SCREENS */}
+      <Stack.Screen name="Seller" component={Seller} />
+      <Stack.Screen name="Men" component={MenScreen} />
+      <Stack.Screen name="Women" component={WomenScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
     </Stack.Navigator>
