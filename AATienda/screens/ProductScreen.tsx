@@ -8,18 +8,18 @@ import {
   ScrollView,
   SafeAreaView,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
+import { RootStackParamList } from "../navigation/StackNavigator";
+import { useCart, CartItemType } from "../context/CartContext";
+import ProductDetailsTabs from "../components/ProductDetailsTabs";
+import RelatedProductsSection from "@/components/RelatedProductsSection";
 import HeaderUtilityBar from "@/components/HeaderUtilityBar";
 import AppHeader from "@/components/AppHeader";
 import AnnouncementBar from "@/components/AnnouncementBar";
-import { RootStackParamList } from "../navigation/StackNavigator";
-import { useCart, CartItemType } from "../context/CartContext";
 import Footer from "@/components/footer";
-import ProductDetailsTabs from "../components/ProductDetailsTabs";
-import ScreenLayout from "../components/ScreenLayout";
-
 type Props = NativeStackScreenProps<RootStackParamList, "Product">;
 
 const BRAND_BROWN = "#54443D";
@@ -28,6 +28,9 @@ const TEXT_GRAY = "#777";
 const BORDER = "#E5E5E5";
 const PRICE_RED = "#C55A6A";
 
+// ✅ height reserved for sticky buttons (content paddingBottom)
+const STICKY_HEIGHT = 130;
+
 export default function ProductScreen({ route, navigation }: Props) {
   const { addToCart } = useCart();
   const product = route.params?.product;
@@ -35,29 +38,29 @@ export default function ProductScreen({ route, navigation }: Props) {
   const [qty, setQty] = useState(1);
   const [size, setSize] = useState<"S" | "M" | "XL">("S");
 
-  // ✅ description from Shopify
   const [descHtml, setDescHtml] = useState<string>("");
   const [loadingDesc, setLoadingDesc] = useState(false);
 
-  // ✅ fake compare price (مثل الصورة)
+  // ✅ make sure gid is correct
+  const gid =
+    String(product?.id || "").startsWith("gid://")
+      ? String(product?.id || "")
+      : `gid://shopify/Product/${product?.id}`;
+
   const compareAt = useMemo(() => {
     const p = Number(product?.price || 0);
     if (!p) return null;
     return String(Math.round(p * 1.12));
   }, [product?.price]);
 
-  // ✅ fetch real description from Shopify by product id inside its collection
   useEffect(() => {
     const loadDesc = async () => {
-      // لازم يكون في handle حتى نعرف أي collection نجيب منها
       const handle = (product as any)?.handle;
       if (!product?.id || !handle) return;
 
       try {
         setLoadingDesc(true);
-        const res = await fetch(
-          `https://aatienda.com/collections/${handle}/products.json`
-        );
+        const res = await fetch(`https://aatienda.com/collections/${handle}/products.json`);
         const data = await res.json();
         const found = (data?.products || []).find(
           (p: any) => String(p.id) === String(product.id)
@@ -75,17 +78,14 @@ export default function ProductScreen({ route, navigation }: Props) {
 
   if (!product) {
     return (
-      <ScreenLayout>
-              <AnnouncementBar />
-              <HeaderUtilityBar />
-              <AppHeader />
+      <SafeAreaView style={styles.safe}>
         <View style={styles.center}>
           <Text style={{ fontWeight: "700" }}>No product data found.</Text>
           <Pressable style={styles.backBtn} onPress={() => navigation.goBack()}>
             <Text style={{ color: "#fff", fontWeight: "700" }}>Back</Text>
           </Pressable>
         </View>
-      </ScreenLayout>
+      </SafeAreaView>
     );
   }
 
@@ -98,9 +98,7 @@ export default function ProductScreen({ route, navigation }: Props) {
     quantity: qty,
   };
 
-  const onAdd = () => {
-    addToCart(productForCart);
-  };
+  const onAdd = () => addToCart(productForCart);
 
   const onBuyNow = () => {
     addToCart(productForCart);
@@ -108,147 +106,129 @@ export default function ProductScreen({ route, navigation }: Props) {
   };
 
   return (
-    <ScreenLayout>
-      <SafeAreaView style={styles.safe}>
-        <View style={styles.container}>
-<ScrollView
-  showsVerticalScrollIndicator={false}
-  contentContainerStyle={[
-    styles.scrollContent,
-    {
-      paddingBottom: 170,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-  ]}
->
-            {/* Breadcrumb */}
-            <Text style={styles.breadcrumb}>
-              Home {"\u203A"} {productForCart.name}
-            </Text>
+    <SafeAreaView style={styles.safe}>
+      {/* ✅ MUST be relative so sticky bar stays fixed */}
+      <View style={styles.screen}>
+                      <AnnouncementBar />
+                      <HeaderUtilityBar />
+                      <AppHeader />
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={[styles.scrollContent, { paddingBottom: STICKY_HEIGHT + 30 }]}
+        >
+          {/* Breadcrumb */}
+          <Text style={styles.breadcrumb}>
+            Home {"\u203A"} {productForCart.name}
+          </Text>
 
-            {/* Image Frame */}
-            <View style={styles.imageFrame}>
-              {!!productForCart.image ? (
-                <Image
-                  source={{ uri: productForCart.image }}
-                  style={styles.image}
-                  resizeMode="cover"
-                />
-              ) : (
-                <View style={[styles.image, { backgroundColor: "#f1f1f1" }]} />
-              )}
+          {/* Image Frame */}
+          <View style={styles.imageFrame}>
+            {!!productForCart.image ? (
+              <Image source={{ uri: productForCart.image }} style={styles.image} resizeMode="cover" />
+            ) : (
+              <View style={[styles.image, { backgroundColor: "#f1f1f1" }]} />
+            )}
 
-              {/* right overlay icons */}
-              <View style={styles.imageRightIcons}>
-                <Pressable style={styles.iconCircle} onPress={() => {}}>
-                  <Ionicons name="share-social-outline" size={20} color="#111" />
-                </Pressable>
-
-                <Pressable style={styles.iconCircle} onPress={() => {}}>
-                  <Ionicons name="heart-outline" size={22} color="#111" />
-                </Pressable>
-              </View>
-
-              {/* left zoom icon */}
-              <View style={styles.imageLeftIcons}>
-                <Pressable style={styles.iconCircleSmall} onPress={() => {}}>
-                  <Ionicons name="search" size={16} color="#111" />
-                </Pressable>
-              </View>
-            </View>
-
-            {/* arrows under image left */}
-            <View style={styles.arrowsRow}>
-              <Pressable style={styles.arrowBtn} onPress={() => {}}>
-                <Ionicons name="arrow-back" size={18} color="#111" />
+            {/* right overlay icons */}
+            <View style={styles.imageRightIcons}>
+              <Pressable style={styles.iconCircle} onPress={() => {}}>
+                <Ionicons name="share-social-outline" size={20} color="#111" />
               </Pressable>
-              <Pressable style={styles.arrowBtn} onPress={() => {}}>
-                <Ionicons name="arrow-forward" size={18} color="#111" />
+
+              <Pressable style={styles.iconCircle} onPress={() => {}}>
+                <Ionicons name="heart-outline" size={22} color="#111" />
               </Pressable>
             </View>
 
-            {/* Title */}
-            <Text style={styles.title}>{productForCart.name}</Text>
-
-            {/* Price row */}
-            <View style={styles.priceRow}>
-              <Text style={styles.priceNow}>{productForCart.price} AED</Text>
-              {!!compareAt && (
-                <Text style={styles.priceOld}>{compareAt} AED</Text>
-              )}
-            </View>
-
-            {/* Quantity */}
-            <Text style={styles.sectionLabel}>Quantity</Text>
-            <View style={styles.qtyBox}>
-              <Pressable
-                style={styles.qtyBtn}
-                onPress={() => setQty((q) => Math.max(1, q - 1))}
-              >
-                <Ionicons name="remove" size={18} color="#666" />
-              </Pressable>
-
-              <View style={styles.qtyMid}>
-                <Text style={styles.qtyText}>{qty}</Text>
-              </View>
-
-              <Pressable
-                style={styles.qtyBtn}
-                onPress={() => setQty((q) => q + 1)}
-              >
-                <Ionicons name="add" size={18} color="#666" />
+            {/* left zoom icon */}
+            <View style={styles.imageLeftIcons}>
+              <Pressable style={styles.iconCircleSmall} onPress={() => {}}>
+                <Ionicons name="search" size={16} color="#111" />
               </Pressable>
             </View>
+          </View>
 
-            {/* Size */}
-            <Text style={styles.sizeCaption}>Italian Size MEN</Text>
-            <View style={styles.sizeRow}>
-              <SizePill value="S" active={size === "S"} onPress={() => setSize("S")} />
-              <SizePill value="M" active={size === "M"} onPress={() => setSize("M")} />
-              <SizePill value="XL" active={size === "XL"} onPress={() => setSize("XL")} />
-            </View>
-
-            {/* Payment methods */}
-            <Text style={styles.payCaption}>
-              We support the following payment methods:
-            </Text>
-            <View style={styles.payRow}>
-              <PayIcon label="AMEX" />
-              <PayIcon label="Pay" />
-              <PayIcon label="GPay" />
-              <PayIcon label="PayPal" />
-              <PayIcon label="VISA" bold />
-              <PayIcon label="tamara" />
-              <PayIcon label="tabby" />
-            </View>
-
-            {/* Tabs (✅ description from shopify + review UI like image) */}
-            <ProductDetailsTabs
-              descriptionHtml={descHtml}
-              loadingDescription={loadingDesc}
-            />
-
-            {loadingDesc && !descHtml ? (
-              <View style={{ paddingVertical: 10 }}>
-                <ActivityIndicator />
-              </View>
-            ) : null}
-          </ScrollView>
-
-          {/* ✅ Sticky bottom bar (always visible) */}
-          <View style={styles.stickyBar}>
-            <Pressable style={styles.addToCart} onPress={onAdd}>
-              <Text style={styles.addToCartText}>ADD TO CART</Text>
+          {/* arrows under image left */}
+          <View style={styles.arrowsRow}>
+            <Pressable style={styles.arrowBtn} onPress={() => {}}>
+              <Ionicons name="arrow-back" size={18} color="#111" />
             </Pressable>
-
-            <Pressable style={styles.buyNow} onPress={onBuyNow}>
-              <Text style={styles.buyNowText}>Buy Now</Text>
+            <Pressable style={styles.arrowBtn} onPress={() => {}}>
+              <Ionicons name="arrow-forward" size={18} color="#111" />
             </Pressable>
           </View>
+
+          {/* Title */}
+          <Text style={styles.title}>{productForCart.name}</Text>
+
+          {/* Price row */}
+          <View style={styles.priceRow}>
+            <Text style={styles.priceNow}>{productForCart.price} AED</Text>
+            {!!compareAt && <Text style={styles.priceOld}>{compareAt} AED</Text>}
+          </View>
+
+          {/* Quantity */}
+          <Text style={styles.sectionLabel}>Quantity</Text>
+          <View style={styles.qtyBox}>
+            <Pressable style={styles.qtyBtn} onPress={() => setQty((q) => Math.max(1, q - 1))}>
+              <Ionicons name="remove" size={18} color="#666" />
+            </Pressable>
+
+            <View style={styles.qtyMid}>
+              <Text style={styles.qtyText}>{qty}</Text>
+            </View>
+
+            <Pressable style={styles.qtyBtn} onPress={() => setQty((q) => q + 1)}>
+              <Ionicons name="add" size={18} color="#666" />
+            </Pressable>
+          </View>
+
+          {/* Size */}
+          <Text style={styles.sizeCaption}>Italian Size MEN</Text>
+          <View style={styles.sizeRow}>
+            <SizePill value="S" active={size === "S"} onPress={() => setSize("S")} />
+            <SizePill value="M" active={size === "M"} onPress={() => setSize("M")} />
+            <SizePill value="XL" active={size === "XL"} onPress={() => setSize("XL")} />
+          </View>
+
+          {/* Payment methods */}
+          <Text style={styles.payCaption}>We support the following payment methods:</Text>
+          <View style={styles.payRow}>
+            <PayIcon label="AMEX" />
+            <PayIcon label="Pay" />
+            <PayIcon label="GPay" />
+            <PayIcon label="PayPal" />
+            <PayIcon label="VISA" bold />
+            <PayIcon label="tamara" />
+            <PayIcon label="tabby" />
+          </View>
+
+          {/* Tabs */}
+          <ProductDetailsTabs descriptionHtml={descHtml} loadingDescription={loadingDesc} />
+
+          {loadingDesc && !descHtml ? (
+            <View style={{ paddingVertical: 10 }}>
+              <ActivityIndicator />
+            </View>
+          ) : null}
+
+          {/* Related products scroll with page */}
+          <RelatedProductsSection productIdGid={gid} />
+        </ScrollView>
+
+        {/* ✅ FIXED STICKY BUTTONS (always visible while scrolling) */}
+        <View style={styles.stickyBar}>
+          <Pressable style={styles.addToCart} onPress={onAdd}>
+            <Text style={styles.addToCartText}>ADD TO CART</Text>
+          </Pressable>
+
+          <Pressable style={styles.buyNow} onPress={onBuyNow}>
+            <Text style={styles.buyNowText}>Buy Now</Text>
+          </Pressable>
         </View>
-      </SafeAreaView>
-    </ScreenLayout>
+        <Footer />
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -264,17 +244,9 @@ function SizePill({
   return (
     <Pressable
       onPress={onPress}
-      style={[
-        styles.sizePill,
-        active ? styles.sizePillActive : styles.sizePillIdle,
-      ]}
+      style={[styles.sizePill, active ? styles.sizePillActive : styles.sizePillIdle]}
     >
-      <Text
-        style={[
-          styles.sizeText,
-          active ? styles.sizeTextActive : styles.sizeTextIdle,
-        ]}
-      >
+      <Text style={[styles.sizeText, active ? styles.sizeTextActive : styles.sizeTextIdle]}>
         {value}
       </Text>
     </Pressable>
@@ -284,16 +256,21 @@ function SizePill({
 function PayIcon({ label, bold }: { label: string; bold?: boolean }) {
   return (
     <View style={styles.payIcon}>
-      <Text style={[styles.payIconText, bold && { fontWeight: "900" }]}>
-        {label}
-      </Text>
+      <Text style={[styles.payIconText, bold && { fontWeight: "900" }]}>{label}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#fff" },
-  container: { flex: 1, backgroundColor: "#fff" },
+
+  // ✅ important: relative container (NOT inside any outer ScrollView)
+  screen: {
+    flex: 1,
+    backgroundColor: "#fff",
+    position: "relative",
+  },
+
   scrollContent: { paddingHorizontal: 14, paddingTop: 10 },
 
   center: { flex: 1, alignItems: "center", justifyContent: "center", gap: 12 },
@@ -311,21 +288,21 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 
-imageFrame: {
-  width: "100%",
-  height: 520,              // ✅ مثل الويب (غيّرها إذا بدك أطول)
-  marginHorizontal: -14,     // ✅ يلغي paddingHorizontal تبع الصفحة ويخليها full width
-  borderWidth: 1,
-  borderColor: BORDER,
-  backgroundColor: "#fff",
-  position: "relative",
-  overflow: "hidden",       // ✅ مهم مع cover
-},
+  imageFrame: {
+    width: "100%",
+    height: 520,
+    marginHorizontal: -14,
+    borderWidth: 1,
+    borderColor: BORDER,
+    backgroundColor: "#fff",
+    position: "relative",
+    overflow: "hidden",
+  },
 
-image: {
-  width: "100%",
-  height: "100%",
-},
+  image: {
+    width: "100%",
+    height: "100%",
+  },
 
   imageRightIcons: {
     position: "absolute",
@@ -334,11 +311,13 @@ image: {
     gap: 12,
     alignItems: "center",
   },
+
   imageLeftIcons: {
     position: "absolute",
     left: 10,
     top: 10,
   },
+
   iconCircle: {
     width: 36,
     height: 36,
@@ -349,6 +328,7 @@ image: {
     alignItems: "center",
     justifyContent: "center",
   },
+
   iconCircleSmall: {
     width: 30,
     height: 30,
@@ -366,6 +346,7 @@ image: {
     marginTop: 10,
     marginBottom: 8,
   },
+
   arrowBtn: {
     width: 44,
     height: 36,
@@ -392,7 +373,9 @@ image: {
     alignItems: "baseline",
     gap: 14,
   },
+
   priceNow: { fontSize: 16, fontWeight: "800", color: PRICE_RED },
+
   priceOld: {
     fontSize: 14,
     color: "#666",
@@ -418,7 +401,9 @@ image: {
     width: 150,
     backgroundColor: "#fff",
   },
+
   qtyBtn: { width: 46, alignItems: "center", justifyContent: "center" },
+
   qtyMid: {
     flex: 1,
     borderLeftWidth: 1,
@@ -427,6 +412,7 @@ image: {
     alignItems: "center",
     justifyContent: "center",
   },
+
   qtyText: { fontWeight: "700", color: "#222", fontSize: 14 },
 
   sizeCaption: {
@@ -436,12 +422,14 @@ image: {
     fontSize: 12,
     fontWeight: "600",
   },
+
   sizeRow: {
     marginTop: 10,
     flexDirection: "row",
     justifyContent: "center",
     gap: 10,
   },
+
   sizePill: {
     minWidth: 38,
     height: 28,
@@ -449,8 +437,10 @@ image: {
     justifyContent: "center",
     paddingHorizontal: 12,
   },
+
   sizePillActive: { backgroundColor: BRAND_BROWN },
   sizePillIdle: { backgroundColor: "#9B9B9B" },
+
   sizeText: { fontSize: 12, fontWeight: "800" },
   sizeTextActive: { color: "#fff" },
   sizeTextIdle: { color: "#fff" },
@@ -462,6 +452,7 @@ image: {
     color: "#777",
     fontWeight: "600",
   },
+
   payRow: {
     marginTop: 10,
     flexDirection: "row",
@@ -469,6 +460,7 @@ image: {
     justifyContent: "center",
     gap: 10,
   },
+
   payIcon: {
     height: 22,
     paddingHorizontal: 10,
@@ -477,21 +469,33 @@ image: {
     alignItems: "center",
     justifyContent: "center",
   },
+
   payIconText: { fontSize: 10, color: "#111", fontWeight: "700" },
 
+  // ✅ fixed bar always visible while scrolling
   stickyBar: {
     position: "absolute",
     left: 0,
     right: 0,
     bottom: 0,
+
     paddingHorizontal: 14,
     paddingTop: 10,
-    paddingBottom: 14,
+    paddingBottom: Platform.OS === "ios" ? 12 : 14,
     backgroundColor: "#fff",
     borderTopWidth: 1,
     borderTopColor: BORDER,
     gap: 10,
+
+    // ✅ ensure it stays above scroll content (Android)
+    elevation: 25,
+    // ✅ shadow (iOS)
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: -4 },
   },
+
   addToCart: {
     height: 46,
     backgroundColor: BRAND_BROWN,
@@ -499,12 +503,14 @@ image: {
     justifyContent: "center",
     borderRadius: 2,
   },
+
   addToCartText: {
     color: "#fff",
     fontWeight: "800",
     letterSpacing: 2,
     fontSize: 12,
   },
+
   buyNow: {
     height: 46,
     backgroundColor: LIGHT_BTN,
@@ -512,5 +518,6 @@ image: {
     justifyContent: "center",
     borderRadius: 2,
   },
+
   buyNowText: { color: "#111", fontWeight: "800", fontSize: 13 },
 });

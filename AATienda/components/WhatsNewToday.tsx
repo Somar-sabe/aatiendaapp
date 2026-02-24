@@ -11,6 +11,11 @@ import {
   NativeSyntheticEvent,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { RootStackParamList } from "../navigation/StackNavigator";
+
+type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 type Item = {
   id: string;
@@ -24,7 +29,7 @@ type Props = {
   data: Item[];
   onPressItem?: (item: Item) => void;
   onToggleLike?: (item: Item) => void;
-  onPressShopNow?: () => void;
+  onPressShopNow?: () => void; // optional override
 };
 
 const { width } = Dimensions.get("window");
@@ -36,6 +41,7 @@ export default function WhatsNewToday({
   onToggleLike,
   onPressShopNow,
 }: Props) {
+  const navigation = useNavigation<Nav>();
   const listRef = useRef<FlatList<Item>>(null);
   const [index, setIndex] = useState(0);
 
@@ -72,13 +78,24 @@ export default function WhatsNewToday({
     setIndex(newIndex);
   };
 
+  const handleShopNow = () => {
+    // ✅ If parent passes custom action, use it
+    if (onPressShopNow) return onPressShopNow();
+
+    // ✅ Otherwise navigate inside the app to best-seller collection
+    navigation.navigate("Collection", {
+      handle: "best-seller", // <-- collection handle
+      title: "Best Sellers",
+    });
+  };
+
   return (
     <View style={styles.wrap}>
       {/* Top text */}
       <Text style={styles.title}>Whats New Today</Text>
       <Text style={styles.subTitle}>Discover what just landed at AA Tienda</Text>
 
-      <Pressable style={styles.shopNow} onPress={onPressShopNow}>
+      <Pressable style={styles.shopNow} onPress={handleShopNow}>
         <Text style={styles.shopNowText}>Shop Now</Text>
       </Pressable>
 

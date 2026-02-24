@@ -6,11 +6,15 @@ import {
   StyleSheet,
   FlatList,
   Pressable,
-  Linking,
   Dimensions,
   NativeScrollEvent,
   NativeSyntheticEvent,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { RootStackParamList } from "../navigation/StackNavigator";
+
+type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 const { width } = Dimensions.get("window");
 
@@ -20,10 +24,13 @@ type Slide = {
   title: string;
   description: string;
   buttonText: string;
-  link: string;
+  collectionHandle: string; // ✅ navigate inside app
+  collectionTitle?: string;
 };
 
 export default function TravelSlider() {
+  const navigation = useNavigation<Nav>();
+
   const slides: Slide[] = useMemo(
     () => [
       {
@@ -33,7 +40,8 @@ export default function TravelSlider() {
         title: "Travel\nto The Best Destinations",
         description: "Evening Desert Safari with Dinner (Premium Camp)",
         buttonText: "Explore the World",
-        link: "https://aatienda.com/collections/travel-and-entertainment",
+        collectionHandle: "travel-and-entertainment",
+        collectionTitle: "Travel & Entertainment",
       },
       {
         id: "2",
@@ -43,7 +51,8 @@ export default function TravelSlider() {
         description:
           "Experience Adventure, Culture, and Tranquility in\nEnchanting Destinations",
         buttonText: "Explore the World",
-        link: "https://aatienda.com/collections/travel-and-entertainment",
+        collectionHandle: "travel-and-entertainment",
+        collectionTitle: "Travel & Entertainment",
       },
     ],
     []
@@ -52,7 +61,7 @@ export default function TravelSlider() {
   const listRef = useRef<FlatList<Slide>>(null);
   const [index, setIndex] = useState(0);
 
-  // ✅ Auto slide (2 items)
+  // ✅ Auto slide
   useEffect(() => {
     const t = setInterval(() => {
       const next = (index + 1) % slides.length;
@@ -69,8 +78,11 @@ export default function TravelSlider() {
     setIndex(next);
   };
 
-  const open = (url: string) => {
-    Linking.openURL(url).catch(() => {});
+  const goToCollection = (handle: string, title?: string) => {
+    navigation.navigate("Collection", {
+      handle,
+      title: title || handle,
+    });
   };
 
   return (
@@ -85,10 +97,13 @@ export default function TravelSlider() {
         onMomentumScrollEnd={onScrollEnd}
         getItemLayout={(_, i) => ({ length: width, offset: width * i, index: i })}
         renderItem={({ item }) => (
-          <Pressable onPress={() => open(item.link)} style={styles.slide}>
+          <Pressable
+            onPress={() => goToCollection(item.collectionHandle, item.collectionTitle)}
+            style={styles.slide}
+          >
             <Image source={{ uri: item.image }} style={styles.image} />
 
-            {/* overlay center like screenshot */}
+            {/* overlay center */}
             <View style={styles.centerOverlay}>
               <Text style={styles.title}>{item.title}</Text>
               <Text style={styles.desc}>{item.description}</Text>
@@ -98,7 +113,7 @@ export default function TravelSlider() {
               </View>
             </View>
 
-            {/* dark overlay for readability */}
+            {/* dark overlay */}
             <View style={styles.darkLayer} />
           </Pressable>
         )}
@@ -117,7 +132,7 @@ export default function TravelSlider() {
 const styles = StyleSheet.create({
   wrap: {
     width: "100%",
-    height: 340, // قريب من الصورة
+    height: 340,
     position: "relative",
     backgroundColor: "#fff",
   },
@@ -135,7 +150,6 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
 
-  // subtle dark layer
   darkLayer: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(0,0,0,0.18)",
@@ -174,7 +188,7 @@ const styles = StyleSheet.create({
     height: 38,
     paddingHorizontal: 22,
     borderRadius: 3,
-    backgroundColor: "#E6E6E6", // نفس الزر الرمادي بالصورة
+    backgroundColor: "#E6E6E6",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -202,9 +216,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   dotOn: {
-    backgroundColor: "#EDEDED", // active (أفتح)
+    backgroundColor: "#EDEDED",
   },
   dotOff: {
-    backgroundColor: "rgba(255,255,255,0.35)", // inactive
+    backgroundColor: "rgba(255,255,255,0.35)",
   },
 });
